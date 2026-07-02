@@ -1,0 +1,14 @@
+{"q": "continuous image of a compact set", "a": "is compact", "move_type": "compactness"}
+{"q": "closed subset of a compact space", "a": "is compact", "move_type": "compactness"}
+{"q": "continuous image of a connected set", "a": "is connected", "move_type": "connectedness"}
+{"q": "union of connected sets sharing a common point", "a": "is connected", "move_type": "connectedness"}
+{"q": "open-set definition of continuity", "a": "preimage of every open set is open", "move_type": "continuity"}
+{"q": "Hausdorff separation condition", "a": "distinct points have disjoint open neighborhoods", "move_type": "separation"}
+{"q": "compact subset of a Hausdorff space", "a": "is closed", "move_type": "separation"}
+{"q": "continuous bijection from a compact space to a Hausdorff space", "a": "is a homeomorphism", "move_type": "homeomorphism"}
+{"q": "are the open interval and closed interval homeomorphic", "a": "no, compactness is a topological invariant", "move_type": "homeomorphism"}
+{"q": "closure of a set A", "a": "A together with its limit points", "move_type": "interior-closure-boundary"}
+{"q": "a set is closed iff", "a": "it equals its closure", "move_type": "open-closed-sets"}
+{"q": "connected but not path-connected example", "a": "the topologist's sine curve", "move_type": "examples"}
+{"q": "topology where every subset is open", "a": "the discrete topology", "move_type": "examples"}
+{"q": "coarsest topology on a set", "a": "the indiscrete (trivial) topology", "move_type": "examples"}

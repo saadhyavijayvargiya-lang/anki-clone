@@ -1,0 +1,8 @@
+{"q": "A passage defines a quotient map; which property is preserved to the quotient?", "a": "Connectedness."}
+{"q": "Show the finite complement topology on the integers is not Hausdorff.", "a": "Any two nonempty opens intersect."}
+{"q": "Is the projection from a product onto a factor an open map?", "a": "Yes."}
+{"q": "Classify whether the long line is second countable.", "a": "No."}
+{"q": "Determine if a bijective continuous map from a non-compact space can fail to be a homeomorphism.", "a": "Yes."}
+{"q": "Which separation axiom does a metric space always satisfy?", "a": "It is Hausdorff (in fact normal)."}
+{"q": "Is the union of two path-connected sets sharing a point path-connected?", "a": "Yes."}
+{"q": "Give a compact space that is not sequentially compact context.", "a": "Product of uncountably many [0,1]."}

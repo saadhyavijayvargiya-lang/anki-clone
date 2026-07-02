@@ -422,6 +422,7 @@ def is_sveltekit_page(path: str) -> bool:
         "import-csv",
         "import-page",
         "image-occlusion",
+        "readiness",
     ]
 
 
@@ -765,6 +766,12 @@ exposed_backend_list = [
     # DeckConfigService
     "get_ignored_before_count",
     "get_retention_workload",
+    # ReadinessService (TopGRE)
+    "points_at_stake_queue",
+    "get_readiness",
+    "record_exam_attempt",
+    "evaluate_performance_model",
+    "most_dangerous_cards",
 ]
 
 

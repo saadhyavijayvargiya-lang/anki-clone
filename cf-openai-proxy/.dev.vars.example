@@ -1,0 +1,5 @@
+# Copy to `.dev.vars` for local `wrangler dev`. NEVER commit `.dev.vars`.
+# Put REAL values only in `.dev.vars` (gitignored) or via `wrangler secret put`.
+# This *.example file must contain placeholders only.
+OPENAI_API_KEY=sk-REPLACE_ME
+PROXY_TOKEN=REPLACE_ME

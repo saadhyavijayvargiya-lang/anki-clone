@@ -1,0 +1,12 @@
+{"q": "What can you conclude about the continuous image of a compact set?", "a": "It is compact."}
+{"q": "Is a closed subset of a compact space compact?", "a": "Yes."}
+{"q": "Continuous image of a connected set is what?", "a": "Connected."}
+{"q": "State the open-set definition of continuity.", "a": "Preimage of every open set is open."}
+{"q": "What is the Hausdorff (T2) separation condition?", "a": "Distinct points have disjoint open neighborhoods."}
+{"q": "Are compact subsets of a Hausdorff space closed?", "a": "Yes."}
+{"q": "Give a connected but not path-connected space.", "a": "The topologist's sine curve."}
+{"q": "Which topology makes every subset open?", "a": "The discrete topology."}
+{"q": "Define the closure of a set A.", "a": "A together with its limit points."}
+{"q": "When is a set closed in terms of its closure?", "a": "When it equals its closure."}
+{"q": "What generates a topology from a small collection of sets?", "a": "A basis or subbasis."}
+{"q": "Are the open interval and closed interval homeomorphic?", "a": "No, compactness differs."}

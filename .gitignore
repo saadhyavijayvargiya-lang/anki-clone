@@ -24,3 +24,27 @@ ts/.svelte-kit
 docs/_build/
 docs/autoapi/
 .complexipy_cache
+
+# --- Monorepo: vendored mobile repos build artifacts ---
+# (target/ and node_modules are already ignored globally above)
+Anki-Android/**/build/
+Anki-Android/.gradle/
+Anki-Android/**/.cxx/
+Anki-Android/.kotlin/
+Anki-Android/.idea/
+Anki-Android/local.properties
+Anki-Android-Backend/**/build/
+Anki-Android-Backend/.gradle/
+Anki-Android-Backend/**/.cxx/
+Anki-Android-Backend/.kotlin/
+Anki-Android-Backend/.idea/
+Anki-Android-Backend/local.properties
+Anki-Android-Backend/aar_build.log
+Anki-Android-Backend/anki/out/
+Anki-Android-Backend/anki/extra/
+Anki-Android-Backend/anki/.idea/
+Anki-Android-Backend/anki/ts/.svelte-kit/
+**/.gradle/
+**/*.iml
+ankidroid_build.log
+aar_build.log

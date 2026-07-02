@@ -1314,6 +1314,31 @@ title="{}" {}>{}</button>""".format(
     def onPrefs(self) -> None:
         aqt.dialogs.open("Preferences", self)
 
+    def onReadiness(self) -> None:
+        aqt.dialogs.open("Readiness", self)
+
+    def onReorderTriage(self) -> None:
+        import anki.readiness
+
+        did = self.col.decks.get_current_id()
+        search = f'deck:"{self.col.decks.name(did)}"'
+        count = anki.readiness.reorder_new_by_triage(self.col, search)
+        tooltip(
+            f"Reordered {count} new cards by points-at-stake (triage).", parent=self
+        )
+        self.reset()
+
+    def onCramSession(self) -> None:
+        import anki.readiness
+
+        did, count = anki.readiness.start_cram_session(self.col, "", 20)
+        if not did or count == 0:
+            tooltip("No cards available to cram yet.", parent=self)
+            return
+        self.col.decks.set_current(did)
+        tooltip(f"Cram session: {count} most-dangerous cards ready.", parent=self)
+        self.moveToState("overview")
+
     def on_check_for_updates(self) -> None:
         from packaging.version import Version
 
@@ -1447,6 +1472,21 @@ title="{}" {}>{}</button>""".format(
         qconnect(m.actionNoteTypes.triggered, self.onNoteTypes)
         qconnect(m.action_check_for_updates.triggered, self.on_check_for_updates)
         qconnect(m.actionPreferences.triggered, self.onPrefs)
+
+        # TopGRE readiness dashboard (added in code to avoid editing main.ui)
+        readiness_action = QAction("TopGRE Readiness", self)
+        readiness_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
+        qconnect(readiness_action.triggered, self.onReadiness)
+        m.menuTools.addAction(readiness_action)
+
+        triage_action = QAction("TopGRE: Reorder New Cards by Triage", self)
+        qconnect(triage_action.triggered, self.onReorderTriage)
+        m.menuTools.addAction(triage_action)
+
+        cram_action = QAction("TopGRE: Cram Most Dangerous", self)
+        cram_action.setShortcut(QKeySequence("Ctrl+Shift+C"))
+        qconnect(cram_action.triggered, self.onCramSession)
+        m.menuTools.addAction(cram_action)
 
         # View
         qconnect(

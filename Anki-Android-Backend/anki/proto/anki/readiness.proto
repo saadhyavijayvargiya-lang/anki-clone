@@ -1,0 +1,120 @@
+// Copyright: Ankitects Pty Ltd and contributors
+// Copyright: TopGRE contributors
+// License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package anki.readiness;
+
+import "anki/generic.proto";
+
+// TopGRE readiness/triage engine. See docs: teaches problem->move routing, and
+// orders study by "points at stake" (exam leverage x student weakness x time
+// efficiency) so the highest-value decision cards come first.
+service ReadinessService {
+  // A new, triage-aware review order. Returns the cards that are ready to study
+  // (due or new) for the given search, sorted by time efficiency descending.
+  rpc PointsAtStakeQueue(PointsAtStakeRequest) returns (PointsAtStakeResponse);
+
+  // The three honest scores (Memory / Performance / Readiness) with ranges,
+  // coverage, evidence, and the give-up rule. Any score that lacks data is
+  // returned with available=false rather than a fabricated number.
+  rpc GetReadiness(GetReadinessRequest) returns (ReadinessResponse);
+
+  // Record one exam-style question attempt (feeds the Performance model).
+  rpc RecordExamAttempt(RecordExamAttemptRequest) returns (generic.Empty);
+
+  // Held-out evaluation of the Performance model vs a simpler baseline.
+  rpc EvaluatePerformanceModel(GetReadinessRequest) returns (PerformanceEvalResponse);
+
+  // Cram session: the most "dangerous" cards overall (exam leverage x memory
+  // weakness x how often you miss that move-type on exam questions), any status.
+  rpc MostDangerousCards(PointsAtStakeRequest) returns (PointsAtStakeResponse);
+}
+
+// Implicitly includes any of the above methods that are not listed here.
+service BackendReadinessService {}
+
+message PointsAtStakeRequest {
+  // Optional Anki search limiting the queue (e.g. a deck or tag). Empty = all.
+  string search = 1;
+  // Max cards to return. 0 = no limit.
+  uint32 limit = 2;
+}
+
+message PointsAtStakeCard {
+  int64 card_id = 1;
+  // The proof "move type" this card drills (from a `move::<type>` tag).
+  string move_type = 2;
+  // Exam leverage (topic weight) x student weakness. Higher = more valuable.
+  double points_at_stake = 3;
+  double topic_weight = 4;
+  // 1 - FSRS retrievability, in [0,1]. 1.0 when memory state is unknown.
+  double weakness = 5;
+  // points_at_stake divided by expected minutes to solve (triage value/min).
+  double time_efficiency = 6;
+}
+
+message PointsAtStakeResponse {
+  repeated PointsAtStakeCard cards = 1;
+}
+
+message GetReadinessRequest {
+  // Optional Anki search limiting scope (e.g. a deck). Empty = whole collection.
+  string search = 1;
+}
+
+message RecordExamAttemptRequest {
+  // The move-type the question tested (e.g. "compactness").
+  string move_type = 1;
+  bool correct = 2;
+  uint32 milliseconds = 3;
+}
+
+// Result of the held-out Performance-model evaluation.
+message PerformanceEvalResponse {
+  bool available = 1;
+  uint32 train_count = 2;
+  uint32 test_count = 3;
+  double model_log_loss = 4;
+  double baseline_log_loss = 5;
+  double model_accuracy = 6;
+  double baseline_accuracy = 7;
+  bool beats_baseline = 8;
+  string note = 9;
+}
+
+// A score with an honest uncertainty range. When `available` is false the
+// system is abstaining (the give-up rule): value/lower/upper are meaningless.
+message ScoreWithRange {
+  bool available = 1;
+  double value = 2;
+  double lower = 3;
+  double upper = 4;
+  // Human-readable unit, e.g. "recall probability" or "P(correct)".
+  string unit = 5;
+}
+
+message ReadinessResponse {
+  // Chance the student recalls a taught fact (FSRS retrievability).
+  ScoreWithRange memory = 1;
+  // Chance of a correct answer on a NEW exam-style question (needs attempts).
+  ScoreWithRange performance = 2;
+  // Projected topology-cluster performance. We deliberately do NOT project a
+  // full GRE 200-990 score: topology is ~10% of the exam, so a full-scale
+  // number would be a fabrication.
+  ScoreWithRange readiness = 3;
+  // Fraction (0..1) of the topology outline the deck covers.
+  double coverage = 4;
+  uint32 graded_reviews = 5;
+  uint32 exam_attempts = 6;
+  // Evidence behind the numbers.
+  repeated string reasons = 7;
+  // What data is still missing (why we abstain).
+  repeated string missing = 8;
+  int64 updated_at = 9;
+  // The single best next thing to study.
+  string best_next = 10;
+}

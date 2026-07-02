@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "topgre-openai-proxy",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-15",
+  "observability": {
+    "enabled": true
+  }
+  // Secrets (never stored here) are set from the terminal:
+  //   wrangler secret put OPENAI_API_KEY
+  //   wrangler secret put PROXY_TOKEN
+}
