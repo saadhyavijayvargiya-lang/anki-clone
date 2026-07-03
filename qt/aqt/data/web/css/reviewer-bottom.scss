@@ -28,6 +28,22 @@ button {
     white-space: nowrap;
     margin: 9px;
     position: relative;
+    border-radius: 999px;
+    transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out;
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px -4px rgba(79, 70, 229, 0.35);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    button {
+        transition: none;
+        &:hover {
+            transform: none;
+        }
+    }
 }
 
 .hitem {

@@ -45,6 +45,9 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     let correctCount = 0;
     const missedTypes: Record<string, number> = {};
 
+    let explainText = "";
+    let explainLoading = false;
+
     $: card = cards[idx];
     $: done = !loading && cards.length > 0 && idx >= cards.length;
     $: progress = cards.length ? Math.round((idx / cards.length) * 100) : 0;
@@ -107,10 +110,35 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         }
     }
 
+    async function explain(): Promise<void> {
+        if (!card || explainLoading) {
+            return;
+        }
+        explainLoading = true;
+        try {
+            const res = await fetch("/_anki/cruxAiExplain", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    problem: card.problem,
+                    moveType: card.moveType,
+                    method: card.method,
+                }),
+            });
+            const data = await res.json();
+            explainText = data.text;
+        } catch {
+            explainText = "Could not load an explanation right now.";
+        } finally {
+            explainLoading = false;
+        }
+    }
+
     function next(): void {
         idx += 1;
         chosen = null;
         revealed = false;
+        explainText = "";
         questionStart = Date.now();
     }
 
@@ -215,9 +243,20 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                         <p>{card.execute}</p>
                     </div>
                 {/if}
-                <button class="btn primary" on:click={next}>
-                    {idx + 1 >= cards.length ? "See results" : "Next problem"}
-                </button>
+                {#if explainText}
+                    <div class="explain">
+                        <span class="m-key">Why this routes here</span>
+                        <p>{explainText}</p>
+                    </div>
+                {/if}
+                <div class="reveal-actions">
+                    <button class="btn ghost" on:click={explain} disabled={explainLoading}>
+                        {explainLoading ? "Thinking" : "Explain why"}
+                    </button>
+                    <button class="btn primary" on:click={next}>
+                        {idx + 1 >= cards.length ? "See results" : "Next problem"}
+                    </button>
+                </div>
             </section>
         {/if}
     {/if}
@@ -468,6 +507,24 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         margin: 0;
         color: var(--ct-ink);
     }
+    .explain {
+        margin: 0.25rem 0 0.75rem;
+        padding: 0.75rem 0.9rem;
+        border-radius: 12px;
+        background: rgba(79, 70, 229, 0.06);
+        border: 1px solid rgba(79, 70, 229, 0.18);
+    }
+    .explain p {
+        margin: 0;
+        color: var(--ct-ink);
+        line-height: 1.55;
+    }
+    .reveal-actions {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
 
     .btn {
         font: inherit;
@@ -489,6 +546,19 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     .btn.primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 22px 0 rgba(79, 70, 229, 0.4);
+    }
+    .btn.ghost {
+        background: var(--ct-surface);
+        border: 1px solid var(--ct-border);
+        color: #334155;
+        box-shadow: var(--ct-shadow);
+        transition:
+            transform 0.18s ease-out,
+            box-shadow 0.18s ease-out;
+    }
+    .btn.ghost:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ct-shadow-hover);
     }
     .btn:focus-visible {
         outline: none;
@@ -573,11 +643,13 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     @media (prefers-reduced-motion: reduce) {
         .opt,
         .btn.primary,
+        .btn.ghost,
         .bar-fill {
             transition: none;
         }
         .opt:hover:not(:disabled),
-        .btn.primary:hover {
+        .btn.primary:hover,
+        .btn.ghost:hover {
             transform: none;
         }
     }

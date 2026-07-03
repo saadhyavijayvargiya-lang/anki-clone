@@ -689,6 +689,46 @@ def crux_ai_coach() -> bytes:
     )
 
 
+def crux_ai_explain() -> bytes:
+    """Explain why a given move solves a given problem type. AI when configured,
+    otherwise a template built from the card's own method text."""
+    import json
+
+    from aqt import crux_ai
+
+    try:
+        payload = json.loads(request.data or b"{}")
+    except Exception:
+        payload = {}
+    problem = str(payload.get("problem", "")).strip()
+    move_type = str(payload.get("moveType", "")).strip()
+    method = str(payload.get("method", "")).strip()
+
+    pretty = move_type.replace("-", " ")
+    fallback = (
+        f"This reads as a {pretty} problem, so the move is: {method} "
+        "Match the trigger in the stem to that move before you compute."
+    )
+    text = fallback
+    source = "template"
+    if crux_ai.ai_available():
+        system = (
+            "You teach problem routing for GRE topology. In two short sentences, "
+            "explain what signal in the problem points to this move family, and "
+            "why the move resolves it. No preamble."
+        )
+        user = (
+            f"Problem: {problem}\nType/move family: {move_type}\n"
+            f"Move: {method}\nExplain the routing, briefly."
+        )
+        ai = crux_ai.chat(system, user)
+        if ai:
+            text = ai
+            source = "ai"
+
+    return json.dumps({"text": text, "source": source}).encode("utf-8")
+
+
 def get_deck_configs_for_update() -> bytes:
     return aqt.mw.col._backend.get_deck_configs_for_update_raw(request.data)
 
@@ -865,6 +905,7 @@ post_handler_list = [
     congrats_info,
     crux_routing_drill,
     crux_ai_coach,
+    crux_ai_explain,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
