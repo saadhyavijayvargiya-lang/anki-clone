@@ -41,6 +41,29 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     let feedback = "";
     let busyAction = "";
 
+    let coachText = "";
+    let coachSource = "";
+    let coachLoading = false;
+
+    async function getPlan(): Promise<void> {
+        coachLoading = true;
+        try {
+            const res = await fetch("/_anki/cruxAiCoach", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: "{}",
+            });
+            const data = await res.json();
+            coachText = data.text;
+            coachSource = data.source;
+        } catch {
+            coachText = "Could not build a plan right now.";
+            coachSource = "";
+        } finally {
+            coachLoading = false;
+        }
+    }
+
     function pct(x: number): string {
         return `${Math.round(x * 100)}%`;
     }
@@ -175,6 +198,26 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         <ScoreCard title="Readiness" subtitle="topology-cluster projection" score={info.readiness} highlight>
             <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v5h-5" /></svg>
         </ScoreCard>
+    </section>
+
+    <section class="panel coach">
+        <div class="panel-head coach-head">
+            <div>
+                <h2>Crux coach</h2>
+                <p>A concrete plan from the triage engine, sharpened by AI when it is configured.</p>
+            </div>
+            <button class="btn ghost" on:click={getPlan} disabled={coachLoading}>
+                {coachLoading ? "Thinking" : "Get plan"}
+            </button>
+        </div>
+        {#if coachText}
+            <div class="coach-body">
+                <p>{coachText}</p>
+                <span class="coach-badge {coachSource === 'ai' ? 'ai' : ''}">
+                    {coachSource === "ai" ? "AI plan" : "engine plan"}
+                </span>
+            </div>
+        {/if}
     </section>
 
     <section class="panel">
@@ -556,6 +599,44 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         margin: 0;
         color: var(--ct-muted);
         font-size: 0.88rem;
+    }
+    .coach-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .coach-head .btn {
+        flex: none;
+    }
+    .coach-body {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.9rem;
+        padding-top: 0.9rem;
+        border-top: 1px solid var(--ct-border-soft);
+    }
+    .coach-body p {
+        margin: 0;
+        color: var(--ct-ink);
+        line-height: 1.55;
+    }
+    .coach-badge {
+        flex: none;
+        align-self: flex-start;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ct-muted);
+        background: var(--ct-border-soft);
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+    }
+    .coach-badge.ai {
+        color: #fff;
+        background: var(--ct-gradient);
     }
 
     .table-wrap {

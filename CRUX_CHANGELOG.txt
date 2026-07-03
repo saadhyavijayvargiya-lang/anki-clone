@@ -6,6 +6,17 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: AI coach (triage plan) with deterministic fallback"  (Jul 3 2026, 1:20 AM)
+- Added the Crux coach to the readiness page: press "Get plan" and it returns a
+  concrete next-actions plan built from the triage engine (your most dangerous
+  routing families, coverage gaps, attempt count). It is labeled "engine plan".
+- When an AI proxy is configured (env CRUX_AI_PROXY_URL / CRUX_AI_PROXY_TOKEN,
+  the existing token-gated Cloudflare OpenAI proxy), the plan is rewritten by the
+  model and labeled "AI plan". The OpenAI key never touches the client.
+- New qt/aqt/crux_ai.py helper: short timeout, fails soft to the deterministic
+  plan, so the app never hangs and the feature works offline. AI is additive.
+- New read-only handler crux_ai_coach in mediasrv aggregates danger by move type.
+
 "Crux: Router drill (problem to type to method) + toolbar/overview polish"  (Jul 3 2026, 1:05 AM)
 - New flagship feature: the Router drill. It shows a problem stem and asks which
   problem type (move family) it calls for, then reveals the move that solves it.

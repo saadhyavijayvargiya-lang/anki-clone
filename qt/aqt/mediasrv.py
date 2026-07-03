@@ -624,6 +624,71 @@ def crux_routing_drill() -> bytes:
     return json.dumps({"cards": cards, "allTypes": _CRUX_OUTLINE}).encode("utf-8")
 
 
+def crux_ai_coach() -> bytes:
+    """A concrete next-actions plan built from the triage engine, optionally
+    rewritten by the AI proxy. Always returns a useful heuristic if AI is off."""
+    import json
+
+    from aqt import crux_ai
+
+    col = aqt.mw.col
+    try:
+        r = col._backend.get_readiness(search="")
+    except Exception:
+        r = None
+
+    danger: dict[str, float] = {}
+    try:
+        resp = col._backend.most_dangerous_cards(search="", limit=60)
+        for c in resp.cards:
+            if c.move_type:
+                danger[c.move_type] = danger.get(c.move_type, 0.0) + c.points_at_stake
+    except Exception:
+        pass
+    weakest = [m for m, _ in sorted(danger.items(), key=lambda kv: -kv[1])[:3]]
+    missing = list(getattr(r, "missing", []) or []) if r is not None else []
+    coverage = round(r.coverage * 100) if r is not None else 0
+    attempts = r.exam_attempts if r is not None else 0
+
+    parts: list[str] = []
+    if weakest:
+        parts.append("Your most dangerous routing families are " + ", ".join(weakest) + ".")
+        parts.append("Run a Router drill on those, then cram the most dangerous cards.")
+    if coverage < 100:
+        parts.append(f"Outline coverage is {coverage} percent; add cards for the gaps.")
+    if attempts < 20:
+        parts.append("Log more exam attempts so Performance and Readiness can settle.")
+    if missing:
+        parts.append("Still missing: " + "; ".join(missing[:2]) + ".")
+    if not parts:
+        parts.append("Study a few cards and log exam attempts to start a plan.")
+    heuristic = " ".join(parts)
+
+    text = heuristic
+    source = "plan"
+    if crux_ai.ai_available():
+        system = (
+            "You are a terse study coach for the GRE Mathematics Subject Test "
+            "point-set topology cluster. Reply with at most four short sentences "
+            "of concrete next actions. No preamble, no marketing language."
+        )
+        user = (
+            f"Most dangerous routing families: {weakest or 'unknown'}. "
+            f"Outline coverage: {coverage}%. Exam attempts logged: {attempts}. "
+            f"Missing data: {missing or 'none'}. The student can run a Router "
+            "drill (problem to type to method), cram the most dangerous cards, "
+            "and log exam attempts. Tell them exactly what to do next."
+        )
+        ai = crux_ai.chat(system, user)
+        if ai:
+            text = ai
+            source = "ai"
+
+    return json.dumps({"text": text, "source": source, "weakest": weakest}).encode(
+        "utf-8"
+    )
+
+
 def get_deck_configs_for_update() -> bytes:
     return aqt.mw.col._backend.get_deck_configs_for_update_raw(request.data)
 
@@ -799,6 +864,7 @@ def save_custom_colours() -> bytes:
 post_handler_list = [
     congrats_info,
     crux_routing_drill,
+    crux_ai_coach,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,
