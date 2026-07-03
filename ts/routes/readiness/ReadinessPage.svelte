@@ -45,6 +45,50 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     let coachSource = "";
     let coachLoading = false;
 
+    type TypeCell = {
+        type: string;
+        cards: number;
+        danger: number;
+        dangerRel: number;
+        weakness: number;
+    };
+    let typeMap: TypeCell[] = [];
+
+    const TYPE_LABELS: Record<string, string> = {
+        "open-closed-sets": "Open / closed",
+        "interior-closure-boundary": "Interior / closure",
+        "bases-subbases": "Bases / subbases",
+        "continuity": "Continuity",
+        "homeomorphism": "Homeomorphism",
+        "compactness": "Compactness",
+        "connectedness": "Connectedness",
+        "separation": "Separation",
+        "examples": "Examples",
+    };
+
+    function tileStyle(cell: TypeCell): string {
+        if (cell.cards === 0) {
+            return "background: var(--ct-border-soft); color: var(--ct-muted);";
+        }
+        const a = 0.12 + cell.dangerRel * 0.8;
+        const ink = cell.dangerRel > 0.55 ? "#fff" : "var(--ct-ink)";
+        return `background: rgba(79,70,229,${a.toFixed(3)}); color: ${ink};`;
+    }
+
+    async function loadTypeMap(): Promise<void> {
+        try {
+            const res = await fetch("/_anki/cruxTypeMap", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: "{}",
+            });
+            const data = await res.json();
+            typeMap = data.types ?? [];
+        } catch {
+            typeMap = [];
+        }
+    }
+
     async function getPlan(): Promise<void> {
         coachLoading = true;
         try {
@@ -75,6 +119,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     async function refresh(): Promise<void> {
         info = await getReadiness({ search: "" });
         queue = (await pointsAtStakeQueue({ search: "", limit: 6 })).cards;
+        loadTypeMap();
     }
 
     function resetTimer(): void {
@@ -219,6 +264,25 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
             </div>
         {/if}
     </section>
+
+    {#if typeMap.length}
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Coverage and danger by type</h2>
+                <p>Deeper indigo means more points at stake. Dashed tiles have no cards yet.</p>
+            </div>
+            <div class="heatmap">
+                {#each typeMap as cell}
+                    <div class="tile" class:empty={cell.cards === 0} style={tileStyle(cell)}>
+                        <span class="t-name">{TYPE_LABELS[cell.type] ?? cell.type}</span>
+                        <span class="t-meta">
+                            {cell.cards} card{cell.cards === 1 ? "" : "s"}
+                        </span>
+                    </div>
+                {/each}
+            </div>
+        </section>
+    {/if}
 
     <section class="panel">
         <div class="panel-head">
@@ -637,6 +701,33 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     .coach-badge.ai {
         color: #fff;
         background: var(--ct-gradient);
+    }
+
+    .heatmap {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.6rem;
+    }
+    .tile {
+        border-radius: 12px;
+        padding: 0.75rem 0.85rem;
+        min-height: 4.2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid var(--ct-border-soft);
+    }
+    .tile.empty {
+        border-style: dashed;
+    }
+    .t-name {
+        font-weight: 700;
+        font-size: 0.88rem;
+        line-height: 1.2;
+    }
+    .t-meta {
+        font-size: 0.75rem;
+        opacity: 0.85;
     }
 
     .table-wrap {

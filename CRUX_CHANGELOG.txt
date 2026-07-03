@@ -6,6 +6,14 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: coverage/danger heatmap + router keyboard play"  (Jul 3 2026, 1:45 AM)
+- Readiness page now has a "Coverage and danger by type" heatmap: one tile per
+  topology move family, indigo intensity scaled to points at stake, dashed tiles
+  for families with no cards yet. Makes the triage picture legible at a glance.
+- New read-only handler crux_type_map aggregates cards and danger per type.
+- Router drill is now keyboard-playable: press 1-4 to pick a type, Enter or N for
+  the next problem, E to explain. Option buttons show their number key.
+
 "Crux: Router drill 'Explain why' + reviewer button polish"  (Jul 3 2026, 1:32 AM)
 - Router drill reveal now has an "Explain why" button. It explains what signal in
   the problem points to that move family and why the move resolves it, teaching

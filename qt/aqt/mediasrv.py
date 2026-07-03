@@ -729,6 +729,47 @@ def crux_ai_explain() -> bytes:
     return json.dumps({"text": text, "source": source}).encode("utf-8")
 
 
+def crux_type_map() -> bytes:
+    """Per-topology-type coverage (card count) and danger, for the heatmap."""
+    import json
+
+    col = aqt.mw.col
+    danger: dict[str, float] = {}
+    weak_sum: dict[str, float] = {}
+    weak_n: dict[str, int] = {}
+    try:
+        resp = col._backend.most_dangerous_cards(search="", limit=400)
+        for c in resp.cards:
+            mt = c.move_type
+            if not mt:
+                continue
+            danger[mt] = danger.get(mt, 0.0) + c.points_at_stake
+            weak_sum[mt] = weak_sum.get(mt, 0.0) + c.weakness
+            weak_n[mt] = weak_n.get(mt, 0) + 1
+    except Exception:
+        pass
+
+    max_d = max(danger.values()) if danger else 1.0
+    types = []
+    for t in _CRUX_OUTLINE:
+        try:
+            cards = len(col.find_cards(f"tag:move::{t}"))
+        except Exception:
+            cards = 0
+        d = danger.get(t, 0.0)
+        w = (weak_sum.get(t, 0.0) / weak_n[t]) if weak_n.get(t) else 0.0
+        types.append(
+            {
+                "type": t,
+                "cards": cards,
+                "danger": d,
+                "dangerRel": (d / max_d) if max_d else 0.0,
+                "weakness": w,
+            }
+        )
+    return json.dumps({"types": types}).encode("utf-8")
+
+
 def get_deck_configs_for_update() -> bytes:
     return aqt.mw.col._backend.get_deck_configs_for_update_raw(request.data)
 
@@ -906,6 +947,7 @@ post_handler_list = [
     crux_routing_drill,
     crux_ai_coach,
     crux_ai_explain,
+    crux_type_map,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,

@@ -142,10 +142,28 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         questionStart = Date.now();
     }
 
+    function onKey(e: KeyboardEvent): void {
+        if (loading || done || !card) {
+            return;
+        }
+        if (!revealed) {
+            const n = Number.parseInt(e.key, 10);
+            if (n >= 1 && n <= card.options.length) {
+                choose(card.options[n - 1]);
+            }
+        } else if (e.key === "Enter" || e.key.toLowerCase() === "n") {
+            next();
+        } else if (e.key.toLowerCase() === "e") {
+            explain();
+        }
+    }
+
     $: missedList = Object.entries(missedTypes).sort((a, b) => b[1] - a[1]);
 
     onMount(loadDrill);
 </script>
+
+<svelte:window on:keydown={onKey} />
 
 <div class="bg" aria-hidden="true">
     <span class="blob blob-a"></span>
@@ -212,7 +230,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         <section class="choices">
             <span class="c-key">Which type does this call for?</span>
             <div class="grid">
-                {#each card.options as opt}
+                {#each card.options as opt, i}
                     <button
                         class="opt"
                         class:correct={revealed && opt === card.moveType}
@@ -221,6 +239,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                         disabled={revealed}
                         on:click={() => choose(opt)}
                     >
+                        <span class="kbd">{i + 1}</span>
                         {label(opt)}
                     </button>
                 {/each}
@@ -463,6 +482,23 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     }
     .opt:disabled {
         cursor: default;
+    }
+    .kbd {
+        display: inline-grid;
+        place-items: center;
+        width: 1.4rem;
+        height: 1.4rem;
+        margin-right: 0.5rem;
+        border-radius: 6px;
+        background: var(--ct-indigo-50);
+        color: var(--ct-primary);
+        font-size: 0.72rem;
+        font-weight: 700;
+        vertical-align: middle;
+    }
+    .opt.correct .kbd,
+    .opt.wrong .kbd {
+        background: rgba(255, 255, 255, 0.6);
     }
     .opt.correct {
         border-color: #10b981;
