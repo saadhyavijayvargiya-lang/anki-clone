@@ -1317,6 +1317,9 @@ title="{}" {}>{}</button>""".format(
     def onReadiness(self) -> None:
         aqt.dialogs.open("Readiness", self)
 
+    def onRouterDrill(self) -> None:
+        aqt.dialogs.open("RouterDrill", self)
+
     def onReorderTriage(self) -> None:
         import anki.readiness
 
@@ -1480,6 +1483,11 @@ title="{}" {}>{}</button>""".format(
         readiness_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
         qconnect(readiness_action.triggered, self.onReadiness)
         m.menuTools.addAction(readiness_action)
+
+        router_action = QAction("Crux: Router drill", self)
+        router_action.setShortcut(QKeySequence("Ctrl+Shift+D"))
+        qconnect(router_action.triggered, self.onRouterDrill)
+        m.menuTools.addAction(router_action)
 
         triage_action = QAction("Crux: Reorder new cards by triage", self)
         qconnect(triage_action.triggered, self.onReorderTriage)

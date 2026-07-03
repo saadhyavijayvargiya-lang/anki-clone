@@ -423,6 +423,7 @@ def is_sveltekit_page(path: str) -> bool:
         "import-page",
         "image-occlusion",
         "readiness",
+        "router",
     ]
 
 
@@ -531,6 +532,96 @@ def congrats_info() -> bytes:
     if not aqt.mw.col.sched._is_finished():
         aqt.mw.taskman.run_on_main(lambda: aqt.mw.moveToState("overview"))
     return raw_backend_request("congrats_info")()
+
+
+# Crux routing drill: builds problem -> type -> method items from the decision
+# chains in the collection (notes tagged chain::/step::/move::). Read-only.
+_CRUX_OUTLINE = [
+    "open-closed-sets",
+    "interior-closure-boundary",
+    "bases-subbases",
+    "continuity",
+    "homeomorphism",
+    "compactness",
+    "connectedness",
+    "separation",
+    "examples",
+]
+
+
+def crux_routing_drill() -> bytes:
+    import json
+    import random
+
+    try:
+        payload = json.loads(request.data or b"{}")
+    except Exception:
+        payload = {}
+    limit = int(payload.get("limit", 12))
+    col = aqt.mw.col
+
+    def clean_problem(text: str) -> str:
+        t = (text or "").strip()
+        if t.startswith("Problem:"):
+            t = t[len("Problem:") :].strip()
+        for marker in ("What TYPE?", "What type?"):
+            idx = t.find(marker)
+            if idx != -1:
+                t = t[:idx].strip()
+        return t
+
+    chains: dict[str, dict] = {}
+    for nid in col.find_notes("tag:chain::*"):
+        note = col.get_note(nid)
+        move = chain = ""
+        step = 0
+        for tag in note.tags:
+            if tag.startswith("move::"):
+                move = tag.split("::", 1)[1]
+            elif tag.startswith("chain::"):
+                chain = tag.split("::", 1)[1]
+            elif tag.startswith("step::"):
+                try:
+                    step = int(tag.split("::", 1)[1])
+                except ValueError:
+                    step = 0
+        if not chain or not move:
+            continue
+        fields = note.fields
+        front = fields[0] if fields else ""
+        back = fields[1] if len(fields) > 1 else ""
+        entry = chains.setdefault(chain, {"move": move, "steps": {}})
+        entry["move"] = move
+        entry["steps"][step] = (front, back)
+
+    rng = random.Random(42)
+    cards = []
+    for chain, data in chains.items():
+        steps = data["steps"]
+        move = data["move"]
+        if 1 not in steps:
+            continue
+        problem = clean_problem(steps[1][0])
+        method = steps.get(2, ("", ""))[1] or steps.get(1, ("", ""))[1]
+        execute = steps.get(3, ("", ""))[1]
+        distractors = [m for m in _CRUX_OUTLINE if m != move]
+        rng.shuffle(distractors)
+        options = [move] + distractors[:3]
+        rng.shuffle(options)
+        cards.append(
+            {
+                "chain": chain,
+                "moveType": move,
+                "problem": problem,
+                "method": method,
+                "execute": execute,
+                "options": options,
+            }
+        )
+    rng.shuffle(cards)
+    if limit > 0:
+        cards = cards[:limit]
+    return json.dumps({"cards": cards, "allTypes": _CRUX_OUTLINE}).encode("utf-8")
 
 
 def get_deck_configs_for_update() -> bytes:
@@ -707,6 +798,7 @@ def save_custom_colours() -> bytes:
 
 post_handler_list = [
     congrats_info,
+    crux_routing_drill,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,

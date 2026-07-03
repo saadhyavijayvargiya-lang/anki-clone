@@ -146,6 +146,8 @@ class DeckBrowser:
             self.mw.onReorderTriage()
         elif which == "readiness":
             self.mw.onReadiness()
+        elif which == "router":
+            self.mw.onRouterDrill()
 
     def set_current_deck(self, deck_id: DeckId) -> None:
         set_current_deck(parent=self.mw, deck_id=deck_id).success(
@@ -239,6 +241,8 @@ class DeckBrowser:
             "<div class='crux-actions'>"
             "<button class='crux-btn primary' onclick='pycmd(\"crux:cram\")'>"
             "<span class='ci'>&#9650;</span>Cram most dangerous</button>"
+            "<button class='crux-btn' onclick='pycmd(\"crux:router\")'>"
+            "Router drill</button>"
             "<button class='crux-btn' onclick='pycmd(\"crux:triage\")'>"
             "Reorder triage</button>"
             "<button class='crux-btn' onclick='pycmd(\"crux:readiness\")'>"

@@ -156,3 +156,27 @@ body {
 .full-sync {
     color: color(state-learn) !important;
 }
+
+/* Crux: indigo-tinted hover for a cohesive top bar */
+body.fancy .hitem {
+    border-radius: 999px;
+    transition:
+        background 0.15s ease-out,
+        color 0.15s ease-out;
+    &:hover {
+        background: rgba(79, 70, 229, 0.09);
+        color: #4f46e5;
+        border-color: transparent !important;
+        text-decoration: none;
+    }
+}
+.nightMode.fancy .hitem:hover,
+.night-mode .hitem:hover {
+    background: rgba(129, 140, 248, 0.16);
+    color: #c7d2fe;
+}
+@media (prefers-reduced-motion: reduce) {
+    body.fancy .hitem {
+        transition: none;
+    }
+}

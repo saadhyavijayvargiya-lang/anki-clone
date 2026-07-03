@@ -6,6 +6,25 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: Router drill (problem to type to method) + toolbar/overview polish"  (Jul 3 2026, 1:05 AM)
+- New flagship feature: the Router drill. It shows a problem stem and asks which
+  problem type (move family) it calls for, then reveals the move that solves it.
+  This trains the problem -> type -> method decision path, which is the spiky POV
+  (route the problem, do not just recall facts).
+  - Frontend: ts/routes/router (SvelteKit page) in the Corporate Trust style,
+    with a progress bar, four-option type picker, correct/misroute feedback,
+    move + follow-up reveal, and an end-of-session summary that lists the types
+    you misrouted most.
+  - Data: a read-only Python handler (crux_routing_drill in mediasrv) builds the
+    drill items from the decision-chain notes already in the collection.
+  - Scoring: each routing choice feeds the Performance model through
+    RecordExamAttempt, so drilling routing also updates readiness and danger.
+  - Wiring: RouterDrill Qt dialog, Tools menu item (Ctrl+Shift+D), and a
+    "Router drill" button on the Crux home dashboard.
+- Toolbar: indigo-tinted rounded hover on the top-bar items for cohesion.
+- Overview (deck study screen): the counts + Study now panel is now an elevated
+  card with a larger heading.
+
 "Crux: rebrand, dashboard home, richer topology seed"  (Jul 3 2026, 12:40 AM)
 - Rebranded the exam-readiness layer from "TopGRE" to "Crux" across the Tools
   menu and the readiness dialog title.
