@@ -6,6 +6,13 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: coverage/danger heatmap on the home dashboard"  (Jul 3 2026, 1:56 AM)
+- The home screen (deck browser) now shows the coverage/danger heatmap directly,
+  computed in Python during render (no network needed). You see the triage
+  picture the moment you open the app: which topology families carry the most
+  points at stake, and which have no cards yet.
+- High-danger tiles switch to light text for contrast; empty tiles are dashed.
+
 "Crux: coverage/danger heatmap + router keyboard play"  (Jul 3 2026, 1:45 AM)
 - Readiness page now has a "Coverage and danger by type" heatmap: one tile per
   topology move family, indigo intensity scaled to points at stake, dashed tiles

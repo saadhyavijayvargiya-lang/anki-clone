@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import html
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import aqt
@@ -29,6 +29,31 @@ from aqt.toolbar import BottomBar
 from aqt.utils import getOnlyText, openLink, shortcut, showInfo, tr
 
 
+CRUX_OUTLINE = [
+    "open-closed-sets",
+    "interior-closure-boundary",
+    "bases-subbases",
+    "continuity",
+    "homeomorphism",
+    "compactness",
+    "connectedness",
+    "separation",
+    "examples",
+]
+
+CRUX_TYPE_LABELS = {
+    "open-closed-sets": "Open / closed",
+    "interior-closure-boundary": "Interior / closure",
+    "bases-subbases": "Bases / subbases",
+    "continuity": "Continuity",
+    "homeomorphism": "Homeomorphism",
+    "compactness": "Compactness",
+    "connectedness": "Connectedness",
+    "separation": "Separation",
+    "examples": "Examples",
+}
+
+
 class DeckBrowserBottomBar:
     def __init__(self, deck_browser: DeckBrowser) -> None:
         self.deck_browser = deck_browser
@@ -43,6 +68,7 @@ class RenderData:
     studied_today: str
     sched_upgrade_required: bool
     readiness: Any = None
+    type_map: list = field(default_factory=list)
 
 
 @dataclass
@@ -168,6 +194,59 @@ class DeckBrowser:
 </center>
 """
 
+    def _compute_type_map(self, col: Collection) -> list[dict]:
+        danger: dict[str, float] = {}
+        try:
+            resp = col._backend.most_dangerous_cards(search="", limit=400)
+            for c in resp.cards:
+                if c.move_type:
+                    danger[c.move_type] = danger.get(c.move_type, 0.0) + c.points_at_stake
+        except Exception:
+            pass
+        max_d = max(danger.values()) if danger else 1.0
+        out: list[dict] = []
+        for t in CRUX_OUTLINE:
+            try:
+                cards = len(col.find_cards(f"tag:move::{t}"))
+            except Exception:
+                cards = 0
+            d = danger.get(t, 0.0)
+            out.append(
+                {
+                    "type": t,
+                    "cards": cards,
+                    "danger_rel": (d / max_d) if max_d else 0.0,
+                }
+            )
+        return out
+
+    def _render_type_map(self, type_map: list[dict]) -> str:
+        if not type_map:
+            return ""
+        tiles = ""
+        for cell in type_map:
+            label = CRUX_TYPE_LABELS.get(cell["type"], cell["type"])
+            cards = cell["cards"]
+            if cards == 0:
+                style = "--a:0"
+                klass = " empty"
+            else:
+                klass = " hot" if cell["danger_rel"] > 0.55 else ""
+                style = f"--a:{cell['danger_rel']:.3f}"
+            plural = "" if cards == 1 else "s"
+            tiles += (
+                f"<div class='hm-tile{klass}' style='{style}'>"
+                f"<span class='hm-name'>{html.escape(label)}</span>"
+                f"<span class='hm-meta'>{cards} card{plural}</span>"
+                f"</div>"
+            )
+        return (
+            "<section class='deck-panel heatmap-panel'>"
+            "<div class='panel-title'>Coverage and danger by type</div>"
+            f"<div class='heatmap'>{tiles}</div>"
+            "</section>"
+        )
+
     def _score_chip(self, label: str, sub: str, score: Any) -> str:
         if score is not None and getattr(score, "available", False):
             pctval = round(score.value * 100)
@@ -261,6 +340,7 @@ class DeckBrowser:
   <section class="score-strip">{chips}</section>
   {best_next}
   <div class="crux-meta">{meta}</div>
+  {self._render_type_map(data.type_map)}
   <section class="deck-panel">
     <table cellspacing=0 cellpadding=3>
       {content.tree}
@@ -284,6 +364,7 @@ class DeckBrowser:
                     studied_today=col.studied_today(),
                     sched_upgrade_required=not col.v3_scheduler(),
                     readiness=readiness,
+                    type_map=self._compute_type_map(col),
                 )
 
             def success(output: RenderData) -> None:

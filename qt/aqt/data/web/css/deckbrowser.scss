@@ -270,6 +270,52 @@ body {
     overflow-x: auto;
 }
 
+.panel-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+    color: var(--fg);
+}
+
+.heatmap-panel {
+    margin-bottom: 1.25rem;
+    overflow: visible;
+}
+.heatmap {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    gap: 0.55rem;
+}
+.hm-tile {
+    border-radius: 12px;
+    padding: 0.65rem 0.75rem;
+    min-height: 3.7rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--border-subtle);
+    background: rgba(79, 70, 229, calc(0.1 + var(--a, 0) * 0.8));
+    color: var(--fg);
+}
+.hm-tile.empty {
+    border-style: dashed;
+    background: var(--canvas);
+    color: var(--fg-subtle);
+}
+.hm-tile.hot {
+    color: #fff;
+    border-color: transparent;
+}
+.hm-name {
+    font-weight: 700;
+    font-size: 0.83rem;
+    line-height: 1.2;
+}
+.hm-meta {
+    font-size: 0.72rem;
+    opacity: 0.85;
+}
+
 table {
     width: 100%;
     border-collapse: separate;
