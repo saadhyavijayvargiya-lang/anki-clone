@@ -174,6 +174,13 @@ class DeckBrowser:
             self.mw.onReadiness()
         elif which == "router":
             self.mw.onRouterDrill()
+        elif which.startswith("drilltype:"):
+            move_type = which.split(":", 1)[1]
+            try:
+                self.mw.col.set_config("cruxRouterFocus", move_type)
+            except Exception:
+                pass
+            self.mw.onRouterDrill()
 
     def set_current_deck(self, deck_id: DeckId) -> None:
         set_current_deck(parent=self.mw, deck_id=deck_id).success(
@@ -225,21 +232,26 @@ class DeckBrowser:
             return ""
         tiles = ""
         for cell in type_map:
-            label = CRUX_TYPE_LABELS.get(cell["type"], cell["type"])
+            label = html.escape(CRUX_TYPE_LABELS.get(cell["type"], cell["type"]))
             cards = cell["cards"]
-            if cards == 0:
-                style = "--a:0"
-                klass = " empty"
-            else:
-                klass = " hot" if cell["danger_rel"] > 0.55 else ""
-                style = f"--a:{cell['danger_rel']:.3f}"
             plural = "" if cards == 1 else "s"
-            tiles += (
-                f"<div class='hm-tile{klass}' style='{style}'>"
-                f"<span class='hm-name'>{html.escape(label)}</span>"
-                f"<span class='hm-meta'>{cards} card{plural}</span>"
-                f"</div>"
-            )
+            if cards == 0:
+                tiles += (
+                    "<div class='hm-tile empty' style='--a:0'>"
+                    f"<span class='hm-name'>{label}</span>"
+                    f"<span class='hm-meta'>{cards} cards</span>"
+                    "</div>"
+                )
+            else:
+                hot = " hot" if cell["danger_rel"] > 0.55 else ""
+                tiles += (
+                    f"<button class='hm-tile{hot}' style='--a:{cell['danger_rel']:.3f}' "
+                    f"title='Drill {label}' "
+                    f"onclick='pycmd(\"crux:drilltype:{cell['type']}\")'>"
+                    f"<span class='hm-name'>{label}</span>"
+                    f"<span class='hm-meta'>{cards} card{plural} &middot; drill</span>"
+                    "</button>"
+                )
         return (
             "<section class='deck-panel heatmap-panel'>"
             "<div class='panel-title'>Coverage and danger by type</div>"

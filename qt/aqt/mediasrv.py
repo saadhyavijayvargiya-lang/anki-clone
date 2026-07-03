@@ -558,7 +558,21 @@ def crux_routing_drill() -> bytes:
     except Exception:
         payload = {}
     limit = int(payload.get("limit", 12))
+    focus = str(payload.get("moveType", "")).strip()
     col = aqt.mw.col
+
+    # One-shot focus set by clicking a heatmap tile on the home dashboard.
+    if not focus:
+        try:
+            focus = str(col.get_config("cruxRouterFocus", "") or "").strip()
+        except Exception:
+            focus = ""
+        if focus:
+            aqt.mw.taskman.run_on_main(
+                lambda: col.remove_config("cruxRouterFocus")
+            )
+    if not focus:
+        focus = "all"
 
     def clean_problem(text: str) -> str:
         t = (text or "").strip()
@@ -601,6 +615,8 @@ def crux_routing_drill() -> bytes:
         move = data["move"]
         if 1 not in steps:
             continue
+        if focus and focus != "all" and move != focus:
+            continue
         problem = clean_problem(steps[1][0])
         method = steps.get(2, ("", ""))[1] or steps.get(1, ("", ""))[1]
         execute = steps.get(3, ("", ""))[1]
@@ -621,7 +637,9 @@ def crux_routing_drill() -> bytes:
     rng.shuffle(cards)
     if limit > 0:
         cards = cards[:limit]
-    return json.dumps({"cards": cards, "allTypes": _CRUX_OUTLINE}).encode("utf-8")
+    return json.dumps(
+        {"cards": cards, "allTypes": _CRUX_OUTLINE, "focus": focus}
+    ).encode("utf-8")
 
 
 def crux_ai_coach() -> bytes:

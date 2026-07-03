@@ -6,6 +6,18 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: focus a type in the router drill + AI proxy fix"  (Jul 3 2026, 5:10 PM)
+- Router drill can now focus a single topology type (a Focus picker), and the
+  home heatmap tiles are clickable: click a family to jump straight into a drill
+  focused on it. This closes the triage loop: see the danger, drill exactly that.
+- Fixed the AI integration so it actually calls the model:
+  - crux_ai now also reads the documented OPENAI_BASE_URL / OPENAI_API_KEY (and
+    TOPGRE_AI_MODEL), not only the CRUX_AI_* names, so an existing proxy setup
+    works with no extra config.
+  - Added a browser User-Agent to the request; Cloudflare was returning 403
+    (error 1010, bot protection) for the default urllib agent. Verified live:
+    the proxy now returns 200 and the coach/explain use real model output.
+
 "Crux: honesty/tuning panel on the readiness page"  (Jul 3 2026, 2:20 AM)
 - Added a "Honesty and tuning" panel: edit the give-up thresholds (minimum
   graded reviews, minimum exam attempts, minimum coverage) and the interleaving

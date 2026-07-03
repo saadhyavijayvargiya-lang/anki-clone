@@ -33,6 +33,8 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     }
 
     let cards: DrillCard[] = [];
+    let allTypes: string[] = [];
+    let focus = "";
     let loading = true;
     let loadError = "";
 
@@ -60,13 +62,17 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
             const res = await fetch("/_anki/cruxRoutingDrill", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ limit: 12 }),
+                body: JSON.stringify({ limit: 12, moveType: focus }),
             });
             if (!res.ok) {
                 throw new Error(`${res.status}`);
             }
             const data = await res.json();
             cards = data.cards ?? [];
+            if (data.allTypes?.length) {
+                allTypes = data.allTypes;
+            }
+            focus = data.focus ?? "all";
             reset();
         } catch (err) {
             loadError = String(err);
@@ -190,6 +196,17 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
             right method is the skill the exam tests, so this drills the decision,
             not the recall.
         </p>
+        {#if allTypes.length}
+            <label class="focus">
+                <span>Focus</span>
+                <select bind:value={focus} on:change={loadDrill}>
+                    <option value="all">All types</option>
+                    {#each allTypes as t}
+                        <option value={t}>{label(t)}</option>
+                    {/each}
+                </select>
+            </label>
+        {/if}
     </header>
 
     {#if loading}
@@ -395,6 +412,29 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         color: var(--ct-muted);
         font-size: 0.95rem;
         max-width: 36rem;
+    }
+    .focus {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.9rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+    }
+    .focus select {
+        font: inherit;
+        font-weight: 500;
+        padding: 0.4rem 0.6rem;
+        border: 1px solid var(--ct-border);
+        border-radius: 8px;
+        background: var(--ct-surface);
+        color: var(--ct-ink);
+    }
+    .focus select:focus-visible {
+        outline: none;
+        border-color: var(--ct-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
     }
 
     .panel {

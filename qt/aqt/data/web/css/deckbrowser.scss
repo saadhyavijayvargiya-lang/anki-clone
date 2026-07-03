@@ -296,6 +296,24 @@ body {
     border: 1px solid var(--border-subtle);
     background: rgba(79, 70, 229, calc(0.1 + var(--a, 0) * 0.8));
     color: var(--fg);
+    /* button reset for the clickable tiles */
+    font: inherit;
+    text-align: start;
+    width: 100%;
+}
+button.hm-tile {
+    cursor: pointer;
+    transition:
+        transform 0.15s ease-out,
+        box-shadow 0.15s ease-out;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-hover;
+    }
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.35);
+    }
 }
 .hm-tile.empty {
     border-style: dashed;
@@ -305,6 +323,14 @@ body {
 .hm-tile.hot {
     color: #fff;
     border-color: transparent;
+}
+@media (prefers-reduced-motion: reduce) {
+    button.hm-tile {
+        transition: none;
+        &:hover {
+            transform: none;
+        }
+    }
 }
 .hm-name {
     font-weight: 700;
