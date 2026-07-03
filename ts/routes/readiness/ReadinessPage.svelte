@@ -89,6 +89,53 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         }
     }
 
+    let settings = {
+        minReviews: 150,
+        minAttempts: 30,
+        minCoveragePct: 50,
+        interleaving: true,
+    };
+    let settingsSaved = false;
+
+    async function loadSettings(): Promise<void> {
+        try {
+            const res = await fetch("/_anki/cruxSettings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: "{}",
+            });
+            const d = await res.json();
+            settings = {
+                minReviews: d.minReviews,
+                minAttempts: d.minAttempts,
+                minCoveragePct: Math.round((d.minCoverage ?? 0.5) * 100),
+                interleaving: d.interleaving,
+            };
+        } catch {
+            // keep defaults
+        }
+    }
+
+    async function saveSettings(): Promise<void> {
+        try {
+            await fetch("/_anki/cruxSettingsSave", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    minReviews: settings.minReviews,
+                    minAttempts: settings.minAttempts,
+                    minCoverage: settings.minCoveragePct / 100,
+                    interleaving: settings.interleaving,
+                }),
+            });
+            settingsSaved = true;
+            setTimeout(() => (settingsSaved = false), 2500);
+            setTimeout(refresh, 300);
+        } catch {
+            // ignore
+        }
+    }
+
     async function getPlan(): Promise<void> {
         coachLoading = true;
         try {
@@ -159,6 +206,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
     onMount(() => {
         refresh();
+        loadSettings();
     });
 </script>
 
@@ -352,6 +400,34 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         {#if feedback}
             <p class="feedback">{feedback}</p>
         {/if}
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Honesty and tuning</h2>
+            <p>How much evidence Crux needs before it shows a score instead of withholding it.</p>
+        </div>
+        <div class="tuning">
+            <label class="tfield">
+                <span class="tlabel">Min graded reviews</span>
+                <input type="number" min="0" bind:value={settings.minReviews} />
+            </label>
+            <label class="tfield">
+                <span class="tlabel">Min exam attempts</span>
+                <input type="number" min="0" bind:value={settings.minAttempts} />
+            </label>
+            <label class="tfield">
+                <span class="tlabel">Min coverage (%)</span>
+                <input type="number" min="0" max="100" bind:value={settings.minCoveragePct} />
+            </label>
+            <label class="tcheck">
+                <input type="checkbox" bind:checked={settings.interleaving} />
+                <span>Interleave move types</span>
+            </label>
+            <button class="btn primary" on:click={saveSettings}>
+                {settingsSaved ? "Saved" : "Save tuning"}
+            </button>
+        </div>
     </section>
 
     {#if info.reasons.length || info.missing.length}
@@ -858,6 +934,52 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         font-size: 0.88rem;
         color: var(--ct-success);
         font-weight: 500;
+    }
+
+    /* Tuning */
+    .tuning {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 1rem;
+    }
+    .tfield {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+    .tlabel {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+    }
+    .tfield input {
+        font: inherit;
+        width: 8rem;
+        padding: 0.5rem 0.7rem;
+        border: 1px solid var(--ct-border);
+        border-radius: 8px;
+        background: var(--ct-surface);
+        color: var(--ct-ink);
+    }
+    .tfield input:focus-visible {
+        outline: none;
+        border-color: var(--ct-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
+    }
+    .tcheck {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--ct-ink);
+        padding-bottom: 0.55rem;
+    }
+    .tcheck input {
+        width: 1.1rem;
+        height: 1.1rem;
+        accent-color: var(--ct-primary);
     }
 
     /* Evidence */

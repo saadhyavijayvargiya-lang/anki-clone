@@ -770,6 +770,65 @@ def crux_type_map() -> bytes:
     return json.dumps({"types": types}).encode("utf-8")
 
 
+def crux_settings() -> bytes:
+    """Current give-up (honesty) thresholds and interleaving, with the engine
+    defaults as fallback."""
+    import json
+
+    col = aqt.mw.col
+
+    def as_int(key: str, default: int) -> int:
+        try:
+            return int(col.get_config(key, default))
+        except Exception:
+            return default
+
+    def as_float(key: str, default: float) -> float:
+        try:
+            return float(col.get_config(key, default))
+        except Exception:
+            return default
+
+    def as_bool(key: str, default: bool) -> bool:
+        v = col.get_config(key, default)
+        return default if v is None else bool(v)
+
+    return json.dumps(
+        {
+            "minReviews": as_int("topgreMinReviews", 150),
+            "minCoverage": as_float("topgreMinCoverage", 0.5),
+            "minAttempts": as_int("topgreMinAttempts", 30),
+            "interleaving": as_bool("topgreInterleaving", True),
+        }
+    ).encode("utf-8")
+
+
+def crux_settings_save() -> bytes:
+    """Persist tuning. The write runs on the main thread to respect Anki's
+    collection-threading model."""
+    import json
+
+    try:
+        payload = json.loads(request.data or b"{}")
+    except Exception:
+        payload = {}
+
+    def apply() -> None:
+        col = aqt.mw.col
+        if "minReviews" in payload:
+            col.set_config("topgreMinReviews", max(0, int(payload["minReviews"])))
+        if "minAttempts" in payload:
+            col.set_config("topgreMinAttempts", max(0, int(payload["minAttempts"])))
+        if "minCoverage" in payload:
+            cov = float(payload["minCoverage"])
+            col.set_config("topgreMinCoverage", min(1.0, max(0.0, cov)))
+        if "interleaving" in payload:
+            col.set_config("topgreInterleaving", bool(payload["interleaving"]))
+
+    aqt.mw.taskman.run_on_main(apply)
+    return json.dumps({"ok": True}).encode("utf-8")
+
+
 def get_deck_configs_for_update() -> bytes:
     return aqt.mw.col._backend.get_deck_configs_for_update_raw(request.data)
 
@@ -948,6 +1007,8 @@ post_handler_list = [
     crux_ai_coach,
     crux_ai_explain,
     crux_type_map,
+    crux_settings,
+    crux_settings_save,
     get_deck_configs_for_update,
     update_deck_configs,
     get_scheduling_states_with_context,

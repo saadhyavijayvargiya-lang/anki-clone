@@ -6,6 +6,14 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: honesty/tuning panel on the readiness page"  (Jul 3 2026, 2:20 AM)
+- Added a "Honesty and tuning" panel: edit the give-up thresholds (minimum
+  graded reviews, minimum exam attempts, minimum coverage) and the interleaving
+  toggle, then save. This surfaces the honesty rule (Crux withholds a score until
+  there is enough evidence) as something you can see and adjust.
+- New handlers crux_settings (read) and crux_settings_save (write on the main
+  thread) back the panel; values persist in the collection config and sync.
+
 "Crux: reviewer answer accents + active-recall router drill"  (Jul 3 2026, 2:08 AM)
 - Reviewer: the Again button now reads rose and the recommended answer (default
   ease) is an indigo-violet gradient, so the grade choices carry meaning at a
