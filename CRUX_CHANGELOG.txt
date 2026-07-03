@@ -6,6 +6,15 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: reviewer answer accents + active-recall router drill"  (Jul 3 2026, 2:08 AM)
+- Reviewer: the Again button now reads rose and the recommended answer (default
+  ease) is an indigo-violet gradient, so the grade choices carry meaning at a
+  glance instead of four identical buttons.
+- Router drill is now genuinely two-stage: after you route the problem to a type,
+  it asks you to recall the move before revealing it (active recall), then shows
+  the move, follow-up, and optional explanation. Keyboard: Enter/Space/M reveals
+  the move, then Enter/N advances.
+
 "Crux: coverage/danger heatmap on the home dashboard"  (Jul 3 2026, 1:56 AM)
 - The home screen (deck browser) now shows the coverage/danger heatmap directly,
   computed in Python during render (no network needed). You see the triage

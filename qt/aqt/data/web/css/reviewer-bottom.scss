@@ -46,6 +46,24 @@ button {
     }
 }
 
+/* Crux: meaningful accents on the answer buttons */
+#outer button[data-ease="1"] {
+    border-color: rgba(225, 29, 72, 0.45) !important;
+    color: #be123c;
+}
+#outer button#defease {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+}
+#outer button#defease:hover {
+    box-shadow: 0 8px 20px 0 rgba(79, 70, 229, 0.4);
+}
+.nightMode #outer button[data-ease="1"] {
+    color: #fb7185;
+}
+
 .hitem {
     margin-top: 2px;
 }
