@@ -1,0 +1,28 @@
+Crux changelog
+==============
+Newest entries first. Each entry: commit name, local time, what changed since
+the previous entry. Crux is the exam-readiness layer built on top of Anki
+(formerly "TopGRE"): it teaches the problem -> type -> method routing path and
+orders study by points at stake.
+
+
+"Crux: rebrand, dashboard home, richer topology seed"  (Jul 3 2026, 12:40 AM)
+- Rebranded the exam-readiness layer from "TopGRE" to "Crux" across the Tools
+  menu and the readiness dialog title.
+- Rebuilt the deck browser (the screen you see on open) into the Crux home
+  dashboard: brand header, an honest status line, Memory/Performance/Readiness
+  score chips, a best-next callout, coverage/reviews/attempts meta, primary
+  actions (Cram most dangerous, Reorder triage, Open readiness), and the deck
+  list restyled as an elevated panel. All existing deck drag/drop, gears, and
+  collapse hooks preserved.
+- Shifted the app-wide light palette to Corporate Trust (slate neutrals, indigo
+  primary/links/focus, indigo-violet primary button gradient, indigo-tinted
+  shadows) via _color-palette.scss + _vars.scss, so every screen and native Qt
+  widget matches, not just the readiness page. Dark mode left intact.
+- Redesigned the readiness SvelteKit page and score cards (hero, action buttons
+  wired to Cram/Triage via the pycmd bridge, stat strip, triage table with
+  weakness bars, exam recorder, evidence grid).
+- Expanded the baseline topology content from 9 to 29 decision chains (87 cards)
+  covering the full outline with real GRE-level point-set topology, and made the
+  seed deterministic (clean slate + attempt reset). Deck renamed "Crux Topology".
+

@@ -48,3 +48,7 @@ Anki-Android-Backend/anki/ts/.svelte-kit/
 **/*.iml
 ankidroid_build.log
 aar_build.log
+wheels_build.log
+*_build.log
+crux_home.png
+submission/

@@ -1473,17 +1473,19 @@ title="{}" {}>{}</button>""".format(
         qconnect(m.action_check_for_updates.triggered, self.on_check_for_updates)
         qconnect(m.actionPreferences.triggered, self.onPrefs)
 
-        # TopGRE readiness dashboard (added in code to avoid editing main.ui)
-        readiness_action = QAction("TopGRE Readiness", self)
+        # Crux readiness layer (added in code to avoid editing main.ui)
+        m.menuTools.addSeparator()
+
+        readiness_action = QAction("Crux: Readiness", self)
         readiness_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
         qconnect(readiness_action.triggered, self.onReadiness)
         m.menuTools.addAction(readiness_action)
 
-        triage_action = QAction("TopGRE: Reorder New Cards by Triage", self)
+        triage_action = QAction("Crux: Reorder new cards by triage", self)
         qconnect(triage_action.triggered, self.onReorderTriage)
         m.menuTools.addAction(triage_action)
 
-        cram_action = QAction("TopGRE: Cram Most Dangerous", self)
+        cram_action = QAction("Crux: Cram most dangerous", self)
         cram_action.setShortcut(QKeySequence("Ctrl+Shift+C"))
         qconnect(cram_action.triggered, self.onCramSession)
         m.menuTools.addAction(cram_action)

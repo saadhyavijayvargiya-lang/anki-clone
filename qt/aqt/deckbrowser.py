@@ -42,6 +42,7 @@ class RenderData:
     current_deck_id: DeckId
     studied_today: str
     sched_upgrade_required: bool
+    readiness: Any = None
 
 
 @dataclass
@@ -134,7 +135,17 @@ class DeckBrowser:
             set_current_deck(
                 parent=self.mw, deck_id=DeckId(int(arg))
             ).run_in_background()
+        elif cmd == "crux":
+            self._crux_action(arg)
         return False
+
+    def _crux_action(self, which: str) -> None:
+        if which == "cram":
+            self.mw.onCramSession()
+        elif which == "triage":
+            self.mw.onReorderTriage()
+        elif which == "readiness":
+            self.mw.onReadiness()
 
     def set_current_deck(self, deck_id: DeckId) -> None:
         set_current_deck(parent=self.mw, deck_id=deck_id).success(
@@ -155,15 +166,120 @@ class DeckBrowser:
 </center>
 """
 
+    def _score_chip(self, label: str, sub: str, score: Any) -> str:
+        if score is not None and getattr(score, "available", False):
+            pctval = round(score.value * 100)
+            width = max(0, min(100, pctval))
+            value_html = f"{pctval}<span class='chip-unit'>%</span>"
+            bar = (
+                f"<div class='chip-bar'><div class='chip-fill' "
+                f"style='width:{width}%'></div></div>"
+            )
+            na = ""
+        else:
+            value_html = "<span class='chip-na'>n/a</span>"
+            bar = "<div class='chip-bar empty'></div>"
+            na = " na"
+        return (
+            f"<div class='score-chip{na}'>"
+            f"<div class='chip-label'>{label}</div>"
+            f"<div class='chip-value'>{value_html}</div>"
+            f"{bar}"
+            f"<div class='chip-sub'>{sub}</div>"
+            f"</div>"
+        )
+
+    def _crux_status_line(self, r: Any) -> str:
+        if r is None:
+            return "Study a few cards and log exam attempts to start an estimate."
+        if getattr(r.readiness, "available", False):
+            pctval = round(r.readiness.value * 100)
+            return (
+                f"Projected {pctval}% on the point-set topology cluster. "
+                "Topology only, not a full GRE score."
+            )
+        if getattr(r.memory, "available", False) or getattr(
+            r.performance, "available", False
+        ):
+            return "Building your estimate. Keep logging exam attempts to unlock readiness."
+        return "No readiness estimate yet. Study a few cards and log exam attempts to begin."
+
+    def _render_crux_home(self, data: RenderData, content: DeckBrowserContent) -> str:
+        r = data.readiness
+        status = html.escape(self._crux_status_line(r))
+        best_next = ""
+        if r is not None and getattr(r, "best_next", ""):
+            best_next = (
+                "<div class='best-next'>"
+                "<span class='bn-key'>Best next</span>"
+                f"<span class='bn-val'>{html.escape(r.best_next)}</span>"
+                "</div>"
+            )
+
+        chips = (
+            self._score_chip("Memory", "recall a taught fact", r.memory if r else None)
+            + self._score_chip(
+                "Performance", "answer a new question", r.performance if r else None
+            )
+            + self._score_chip(
+                "Readiness", "topology-cluster projection", r.readiness if r else None
+            )
+        )
+
+        coverage = round(r.coverage * 100) if r else 0
+        reviews = r.graded_reviews if r else 0
+        attempts = r.exam_attempts if r else 0
+        meta = (
+            f"<span><b>{coverage}%</b> outline coverage</span>"
+            f"<span><b>{reviews}</b> graded reviews</span>"
+            f"<span><b>{attempts}</b> exam attempts</span>"
+        )
+
+        actions = (
+            "<div class='crux-actions'>"
+            "<button class='crux-btn primary' onclick='pycmd(\"crux:cram\")'>"
+            "<span class='ci'>&#9650;</span>Cram most dangerous</button>"
+            "<button class='crux-btn' onclick='pycmd(\"crux:triage\")'>"
+            "Reorder triage</button>"
+            "<button class='crux-btn' onclick='pycmd(\"crux:readiness\")'>"
+            "Open readiness</button>"
+            "</div>"
+        )
+
+        return f"""
+<div class="crux-home">
+  <div class="crux-bg" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span></div>
+  <header class="crux-hero">
+    <div class="brand"><span class="mark">Crux</span><span class="brand-tag">topology readiness</span></div>
+    <p class="crux-status">{status}</p>
+    {actions}
+  </header>
+  <section class="score-strip">{chips}</section>
+  {best_next}
+  <div class="crux-meta">{meta}</div>
+  <section class="deck-panel">
+    <table cellspacing=0 cellpadding=3>
+      {content.tree}
+    </table>
+  </section>
+  <div class="crux-today">{content.stats}</div>
+</div>
+"""
+
     def _renderPage(self, reuse: bool = False) -> None:
         if not reuse:
 
             def get_data(col: Collection) -> RenderData:
+                try:
+                    readiness = col._backend.get_readiness(search="")
+                except Exception:
+                    readiness = None
                 return RenderData(
                     tree=col.sched.deck_due_tree(),
                     current_deck_id=col.decks.get_current_id(),
                     studied_today=col.studied_today(),
                     sched_upgrade_required=not col.v3_scheduler(),
+                    readiness=readiness,
                 )
 
             def success(output: RenderData) -> None:
@@ -187,7 +303,7 @@ class DeckBrowser:
         gui_hooks.deck_browser_will_render_content(self, content)
         self.web.stdHtml(
             self._v1_upgrade_message(data.sched_upgrade_required)
-            + self._body % content.__dict__,
+            + self._render_crux_home(data, content),
             css=["css/deckbrowser.css"],
             js=[
                 "js/vendor/jquery.min.js",

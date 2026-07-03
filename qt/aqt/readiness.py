@@ -21,7 +21,7 @@ class ReadinessDialog(QDialog):
         mw.garbage_collect_on_dialog_finish(self)
         self.mw = mw
         self.name = "readiness"
-        self.setWindowTitle("TopGRE Readiness")
+        self.setWindowTitle("Crux: Readiness")
         self.setMinimumSize(760, 620)
         disable_help_button(self)
         restoreGeom(self, self.name, default_size=(840, 760))
@@ -39,6 +39,14 @@ class ReadinessDialog(QDialog):
         self.activateWindow()
 
     def _on_bridge_cmd(self, cmd: str) -> bool:
+        if cmd == "topgre:cram":
+            # Build the cram deck, then close so the deck overview is visible.
+            self.close()
+            self.mw.onCramSession()
+            return True
+        if cmd == "topgre:triage":
+            self.mw.onReorderTriage()
+            return True
         return False
 
     def reject(self) -> None:

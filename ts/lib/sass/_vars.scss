@@ -72,14 +72,14 @@ $vars: (
             default: (
                 "Default text/icon color",
                 (
-                    light: palette(darkgray, 9),
+                    light: palette(slate, 9),
                     dark: palette(lightgray, 0),
                 ),
             ),
             subtle: (
                 "Placeholder text, icons in idle state",
                 (
-                    light: palette(darkgray, 0),
+                    light: palette(slate, 5),
                     dark: palette(lightgray, 9),
                 ),
             ),
@@ -100,8 +100,8 @@ $vars: (
             link: (
                 "Hyperlink foreground color",
                 (
-                    light: palette(blue, 7),
-                    dark: palette(blue, 2),
+                    light: palette(indigo, 6),
+                    dark: palette(indigo, 3),
                 ),
             ),
         ),
@@ -109,7 +109,7 @@ $vars: (
             default: (
                 "Window background",
                 (
-                    light: palette(lightgray, 2),
+                    light: palette(slate, 0),
                     dark: palette(darkgray, 5),
                 ),
             ),
@@ -153,14 +153,14 @@ $vars: (
             default: (
                 "Border color with medium contrast against window background",
                 (
-                    light: palette(lightgray, 6),
+                    light: palette(slate, 2),
                     dark: palette(darkgray, 7),
                 ),
             ),
             subtle: (
                 "Border color with low contrast against window background",
                 (
-                    light: palette(lightgray, 4),
+                    light: palette(slate, 1),
                     dark: palette(darkgray, 6),
                 ),
             ),
@@ -174,8 +174,8 @@ $vars: (
             focus: (
                 "Border color of focused input elements",
                 (
-                    light: palette(blue, 5),
-                    dark: palette(blue, 5),
+                    light: palette(indigo, 5),
+                    dark: palette(indigo, 5),
                 ),
             ),
         ),
@@ -223,31 +223,31 @@ $vars: (
                 bg: (
                     "Background color of primary button",
                     (
-                        light: color.scale(palette(blue, 6), $lightness: 5%),
-                        dark: color.scale(palette(blue, 7), $saturation: -10%),
+                        light: palette(indigo, 6),
+                        dark: color.scale(palette(indigo, 7), $saturation: -10%),
                     ),
                 ),
                 gradient: (
                     start: (
                         "Start value of primary button gradient",
                         (
-                            light: palette(blue, 5),
-                            dark: color.scale(palette(blue, 6), $saturation: -10%),
+                            light: palette(indigo, 5),
+                            dark: color.scale(palette(indigo, 6), $saturation: -10%),
                         ),
                     ),
                     end: (
                         "End value of primary button gradient",
                         (
-                            light: color.scale(palette(blue, 6), $lightness: 5%),
-                            dark: color.scale(palette(blue, 7), $saturation: -10%),
+                            light: palette(violet, 6),
+                            dark: color.scale(palette(indigo, 7), $saturation: -10%),
                         ),
                     ),
                 ),
                 disabled: (
                     "Background color of primary button in disabled state",
                     (
-                        light: palette(blue, 3),
-                        dark: color.scale(palette(blue, 5), $saturation: -10%),
+                        light: palette(indigo, 3),
+                        dark: color.scale(palette(indigo, 5), $saturation: -10%),
                     ),
                 ),
             ),
@@ -281,7 +281,7 @@ $vars: (
             default: (
                 "Default box-shadow color",
                 (
-                    light: palette(lightgray, 6),
+                    light: palette(indigo, 2),
                     dark: palette(darkgray, 8),
                 ),
             ),
@@ -310,8 +310,8 @@ $vars: (
             card: (
                 "Accent color for cards",
                 (
-                    light: palette(blue, 4),
-                    dark: palette(blue, 3),
+                    light: palette(indigo, 5),
+                    dark: palette(indigo, 3),
                 ),
             ),
             note: (
@@ -384,8 +384,8 @@ $vars: (
             new: (
                 "Accent color for new cards",
                 (
-                    light: palette(blue, 5),
-                    dark: palette(blue, 3),
+                    light: palette(indigo, 6),
+                    dark: palette(indigo, 3),
                 ),
             ),
             learn: (
@@ -428,8 +428,8 @@ $vars: (
             bg: (
                 "Background color of highlighted items",
                 (
-                    light: color.scale(palette(blue, 6), $alpha: -50%),
-                    dark: color.scale(palette(blue, 3), $alpha: -50%),
+                    light: color.scale(palette(indigo, 6), $alpha: -50%),
+                    dark: color.scale(palette(indigo, 3), $alpha: -50%),
                 ),
             ),
             fg: (
