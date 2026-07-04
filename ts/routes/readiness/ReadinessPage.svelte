@@ -79,7 +79,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         try {
             const res = await fetch("/_anki/cruxTypeMap", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/binary" },
                 body: "{}",
             });
             const data = await res.json();
@@ -101,7 +101,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         try {
             const res = await fetch("/_anki/cruxSettings", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/binary" },
                 body: "{}",
             });
             const d = await res.json();
@@ -120,7 +120,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         try {
             await fetch("/_anki/cruxSettingsSave", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/binary" },
                 body: JSON.stringify({
                     minReviews: settings.minReviews,
                     minAttempts: settings.minAttempts,
@@ -141,7 +141,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         try {
             const res = await fetch("/_anki/cruxAiCoach", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/binary" },
                 body: "{}",
             });
             const data = await res.json();

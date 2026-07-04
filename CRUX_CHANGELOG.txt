@@ -6,6 +6,16 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: fix 403 'Unexpected API access' on custom page fetches"  (Jul 3 2026, 9:12 PM)
+- The router drill and readiness AI/heatmap/tuning panels fetch custom Python
+  endpoints directly. Anki's media server rejects any POST whose Content-Type is
+  not application/binary (a CSRF guard), returning 403 and popping "Unexpected
+  API access". Our fetches sent application/json, so the drill showed "Could not
+  load (Error: 403)" and the warning appeared.
+- Fix: all six custom fetches now send Content-Type: application/binary (the body
+  is still JSON text, which the handlers json.loads). Verified end to end: the
+  click opens the dialog, the fetch reaches the handler, and the drill loads.
+
 "Crux: fix crash when clicking home dashboard actions"  (Jul 3 2026, 9:00 PM)
 - Clicking a heatmap tile (and the Cram/Router/Readiness home buttons) crashed
   Anki. Root cause: opening a webview-based dialog synchronously from inside the

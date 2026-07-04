@@ -61,7 +61,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         try {
             const res = await fetch("/_anki/cruxRoutingDrill", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/binary" },
                 body: JSON.stringify({ limit: 12, moveType: focus }),
             });
             if (!res.ok) {
@@ -126,7 +126,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         try {
             const res = await fetch("/_anki/cruxAiExplain", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/binary" },
                 body: JSON.stringify({
                     problem: card.problem,
                     moveType: card.moveType,
