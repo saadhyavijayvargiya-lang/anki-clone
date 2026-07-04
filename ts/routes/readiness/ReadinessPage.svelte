@@ -785,12 +785,15 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         gap: 0.6rem;
     }
     .tile {
+        box-sizing: border-box;
+        width: auto;
         border-radius: 12px;
         padding: 0.75rem 0.85rem;
         min-height: 4.2rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: 0.3rem;
         border: 1px solid var(--ct-border-soft);
     }
     .tile.empty {

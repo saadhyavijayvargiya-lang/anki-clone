@@ -6,6 +6,13 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: fix overlapping tiles in the coverage/danger heatmap"  (Jul 3 2026, 8:43 PM)
+- The home heatmap tiles are clickable buttons, and Anki's global button rule
+  (margin plus content-box sizing) combined with an explicit width:100% made each
+  tile wider than its grid cell, so they overlapped. Fixed with box-sizing:
+  border-box, width:auto, min-width:0, and margin:0, and preserved the danger
+  tint on hover. Added the same box-sizing to the readiness heatmap for safety.
+
 "Crux: focus a type in the router drill + AI proxy fix"  (Jul 3 2026, 5:10 PM)
 - Router drill can now focus a single topology type (a Focus picker), and the
   home heatmap tiles are clickable: click a family to jump straight into a drill

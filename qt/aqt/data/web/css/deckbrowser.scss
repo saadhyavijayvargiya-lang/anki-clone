@@ -287,19 +287,23 @@ body {
     gap: 0.55rem;
 }
 .hm-tile {
+    box-sizing: border-box;
     border-radius: 12px;
     padding: 0.65rem 0.75rem;
     min-height: 3.7rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 0.3rem;
     border: 1px solid var(--border-subtle);
     background: rgba(79, 70, 229, calc(0.1 + var(--a, 0) * 0.8));
     color: var(--fg);
     /* button reset for the clickable tiles */
     font: inherit;
     text-align: start;
-    width: 100%;
+    width: auto;
+    min-width: 0;
+    margin: 0;
 }
 button.hm-tile {
     cursor: pointer;
@@ -309,6 +313,9 @@ button.hm-tile {
     &:hover {
         transform: translateY(-2px);
         box-shadow: $shadow-hover;
+        /* keep the danger tint on hover (global button:hover would repaint it) */
+        background: rgba(79, 70, 229, calc(0.18 + var(--a, 0) * 0.8));
+        border-color: var(--border-subtle);
     }
     &:focus-visible {
         outline: none;
