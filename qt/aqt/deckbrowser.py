@@ -166,6 +166,13 @@ class DeckBrowser:
         return False
 
     def _crux_action(self, which: str) -> None:
+        # Defer to the next event-loop tick. Opening a webview dialog (readiness,
+        # router) synchronously from inside this webview's own bridge callback
+        # re-enters QtWebEngine and crashes; running it after the callback
+        # returns is safe.
+        QTimer.singleShot(0, lambda: self._run_crux_action(which))
+
+    def _run_crux_action(self, which: str) -> None:
         if which == "cram":
             self.mw.onCramSession()
         elif which == "triage":

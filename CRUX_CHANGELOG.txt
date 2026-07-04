@@ -6,6 +6,14 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: fix crash when clicking home dashboard actions"  (Jul 3 2026, 9:00 PM)
+- Clicking a heatmap tile (and the Cram/Router/Readiness home buttons) crashed
+  Anki. Root cause: opening a webview-based dialog synchronously from inside the
+  deck browser webview's own click callback re-enters QtWebEngine and crashes.
+- Fix: dispatch every home dashboard action on the next event-loop tick
+  (QTimer.singleShot(0, ...)) so the click callback returns first. Verified the
+  router/readiness dialogs now open cleanly from the home.
+
 "Crux: fix overlapping tiles in the coverage/danger heatmap"  (Jul 3 2026, 8:43 PM)
 - The home heatmap tiles are clickable buttons, and Anki's global button rule
   (margin plus content-box sizing) combined with an explicit width:100% made each
