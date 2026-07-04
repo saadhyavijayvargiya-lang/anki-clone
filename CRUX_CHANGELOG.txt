@@ -6,6 +6,17 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: fix crash when reopening the readiness/router dialogs"  (Jul 3 2026, 9:24 PM)
+- Reopening the Router drill or Readiness dialog crashed with "wrapped C/C++
+  object ... has been deleted". Cause: the dialogs never told Anki's
+  DialogManager they had closed, so it kept a dangling reference and, on reopen,
+  called windowState() on the deleted C++ object.
+- Fix: call aqt.dialogs.markClosed("RouterDrill" / "Readiness") in each dialog's
+  reject(), matching how Anki's built-in dialogs (About, Browser, stats, etc.)
+  behave. Verified with an automated open, close, reopen self-test: no crash.
+- This is the real cause of "worked once then broke": the first open worked, the
+  second (after closing) hit the stale reference.
+
 "Crux: fix 403 'Unexpected API access' on custom page fetches"  (Jul 3 2026, 9:12 PM)
 - The router drill and readiness AI/heatmap/tuning panels fetch custom Python
   endpoints directly. Anki's media server rejects any POST whose Content-Type is

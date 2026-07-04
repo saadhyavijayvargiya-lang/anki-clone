@@ -47,4 +47,5 @@ class RouterDrillDialog(QDialog):
         if self.web:
             self.web.cleanup()
             self.web = None
+        aqt.dialogs.markClosed("RouterDrill")
         QDialog.reject(self)

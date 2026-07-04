@@ -54,4 +54,5 @@ class ReadinessDialog(QDialog):
         if self.web:
             self.web.cleanup()
             self.web = None
+        aqt.dialogs.markClosed("Readiness")
         QDialog.reject(self)
