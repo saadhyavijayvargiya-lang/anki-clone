@@ -47,6 +47,18 @@ class ReadinessDialog(QDialog):
         if cmd == "topgre:triage":
             self.mw.onReorderTriage()
             return True
+        if cmd.startswith("topgre:drilltype:"):
+            move_type = cmd.split(":", 2)[2]
+            try:
+                self.mw.col.set_config("cruxRouterFocus", move_type)
+            except Exception:
+                pass
+            # Opening a webview dialog from inside this webview's own bridge
+            # callback re-enters QtWebEngine and crashes; close this dialog first,
+            # then defer the router open to the next event-loop tick.
+            self.close()
+            QTimer.singleShot(0, self.mw.onRouterDrill)
+            return True
         return False
 
     def reject(self) -> None:

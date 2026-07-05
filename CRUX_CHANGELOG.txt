@@ -6,6 +6,21 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: readiness heatmap shows routing accuracy and drills weak types"  (Jul 5 2026, 6:00 PM)
+- The readiness "Coverage and danger by type" heatmap now shows your exam
+  routing accuracy per type (correct/total from recorded attempts). cruxTypeMap
+  reads it from the topgrePerf config; the frontend renders "routed X/Y (Z%)"
+  or "no exam attempts" per tile.
+- Each non-empty tile is now a button: click it to open the Router drill focused
+  on exactly that type. Reuses the cruxRouterFocus one-shot mechanism; the open
+  is deferred with QTimer.singleShot and the dialog closed first, to avoid the
+  QtWebEngine re-entrancy crash from opening a dialog inside a webview callback.
+- Triage queue "Move" column and the practice-recorder dropdown now show
+  human-readable labels (e.g. "Compactness") instead of raw slugs.
+- Frontend rebuilt (sveltekit); verified the new strings are in the served
+  chunk. Backend/bridge changes are Python (mediasrv.py, readiness.py) and take
+  effect on app restart.
+
 "Crux: triage queue ranks by exam danger, not quick cards"  (Jul 5 2026, 5:20 PM)
 - Fixed the triage queue showing mostly "examples". The Rust
   points_at_stake_queue now ranks by points at stake = exam weight x weakness x

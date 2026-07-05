@@ -51,8 +51,23 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         danger: number;
         dangerRel: number;
         weakness: number;
+        attempts: number;
+        correct: number;
     };
     let typeMap: TypeCell[] = [];
+
+    function routeAcc(cell: TypeCell): string {
+        if (!cell.attempts) {
+            return "no exam attempts";
+        }
+        const p = Math.round((cell.correct / cell.attempts) * 100);
+        return `routed ${cell.correct}/${cell.attempts} (${p}%)`;
+    }
+
+    // Open the Router drill focused on this type (handled in qt/aqt/readiness.py).
+    function drillType(type: string): void {
+        bridgeCommand("topgre:drilltype:" + type);
+    }
 
     const TYPE_LABELS: Record<string, string> = {
         "open-closed-sets": "Open / closed",
@@ -361,16 +376,25 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         <section class="panel">
             <div class="panel-head">
                 <h2>Coverage and danger by type</h2>
-                <p>Deeper indigo means more points at stake. Dashed tiles have no cards yet.</p>
+                <p>Deeper indigo means more points at stake. Each tile shows your exam routing accuracy; click one to drill that type.</p>
             </div>
             <div class="heatmap">
                 {#each typeMap as cell}
-                    <div class="tile" class:empty={cell.cards === 0} style={tileStyle(cell)}>
+                    <button
+                        type="button"
+                        class="tile"
+                        class:empty={cell.cards === 0}
+                        style={tileStyle(cell)}
+                        disabled={cell.cards === 0}
+                        title={cell.cards === 0
+                            ? "No cards yet"
+                            : `Drill ${TYPE_LABELS[cell.type] ?? cell.type}`}
+                        on:click={() => drillType(cell.type)}
+                    >
                         <span class="t-name">{TYPE_LABELS[cell.type] ?? cell.type}</span>
-                        <span class="t-meta">
-                            {cell.cards} card{cell.cards === 1 ? "" : "s"}
-                        </span>
-                    </div>
+                        <span class="t-meta">{cell.cards} card{cell.cards === 1 ? "" : "s"}</span>
+                        <span class="t-acc">{routeAcc(cell)}</span>
+                    </button>
                 {/each}
             </div>
         </section>
@@ -397,7 +421,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                         {#each queue as card, i}
                             <tr>
                                 <td><span class="rank">{i + 1}</span></td>
-                                <td class="move">{card.moveType}</td>
+                                <td class="move">{TYPE_LABELS[card.moveType] ?? card.moveType}</td>
                                 <td>
                                     <div class="weak">
                                         <div class="weak-track"><div class="weak-fill" style="width: {card.weakness * 100}%"></div></div>
@@ -426,7 +450,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                 <span class="field-label">Move type</span>
                 <select bind:value={moveType} on:change={resetTimer}>
                     {#each MOVE_TYPES as mt}
-                        <option value={mt}>{mt}</option>
+                        <option value={mt}>{TYPE_LABELS[mt] ?? mt}</option>
                     {/each}
                 </select>
             </label>
@@ -913,18 +937,36 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     }
     .tile {
         box-sizing: border-box;
-        width: auto;
+        width: 100%;
+        text-align: left;
+        font: inherit;
         border-radius: 12px;
         padding: 0.75rem 0.85rem;
-        min-height: 4.2rem;
+        min-height: 4.6rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         gap: 0.3rem;
         border: 1px solid var(--ct-border-soft);
+        cursor: pointer;
+        transition:
+            transform 0.15s ease-out,
+            box-shadow 0.15s ease-out,
+            filter 0.15s ease-out;
     }
-    .tile.empty {
+    .tile:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2);
+        filter: saturate(1.15);
+    }
+    .tile:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.35);
+    }
+    .tile.empty,
+    .tile:disabled {
         border-style: dashed;
+        cursor: default;
     }
     .t-name {
         font-weight: 700;
@@ -934,6 +976,19 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     .t-meta {
         font-size: 0.75rem;
         opacity: 0.85;
+    }
+    .t-acc {
+        font-size: 0.72rem;
+        font-weight: 600;
+        opacity: 0.9;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .tile {
+            transition: none;
+        }
+        .tile:hover:not(:disabled) {
+            transform: none;
+        }
     }
 
     .table-wrap {

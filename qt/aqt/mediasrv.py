@@ -748,7 +748,8 @@ def crux_ai_explain() -> bytes:
 
 
 def crux_type_map() -> bytes:
-    """Per-topology-type coverage (card count) and danger, for the heatmap."""
+    """Per-topology-type coverage (card count), memory danger, and exam routing
+    accuracy, for the heatmap."""
     import json
 
     col = aqt.mw.col
@@ -767,6 +768,17 @@ def crux_type_map() -> bytes:
     except Exception:
         pass
 
+    # Per-move exam routing accuracy from recorded attempts. Stored by the Rust
+    # engine in the topgrePerf config as {"moves": {"<type>": {correct, total}}}.
+    moves: dict = {}
+    try:
+        perf = col.get_config("topgrePerf", {}) or {}
+        got = perf.get("moves", {}) if isinstance(perf, dict) else {}
+        if isinstance(got, dict):
+            moves = got
+    except Exception:
+        moves = {}
+
     max_d = max(danger.values()) if danger else 1.0
     types = []
     for t in _CRUX_OUTLINE:
@@ -776,6 +788,12 @@ def crux_type_map() -> bytes:
             cards = 0
         d = danger.get(t, 0.0)
         w = (weak_sum.get(t, 0.0) / weak_n[t]) if weak_n.get(t) else 0.0
+        stats = moves.get(t) if isinstance(moves.get(t), dict) else {}
+        try:
+            attempts = int(stats.get("total", 0) or 0)
+            correct = int(stats.get("correct", 0) or 0)
+        except Exception:
+            attempts, correct = 0, 0
         types.append(
             {
                 "type": t,
@@ -783,6 +801,8 @@ def crux_type_map() -> bytes:
                 "danger": d,
                 "dangerRel": (d / max_d) if max_d else 0.0,
                 "weakness": w,
+                "attempts": attempts,
+                "correct": correct,
             }
         )
     return json.dumps({"types": types}).encode("utf-8")
