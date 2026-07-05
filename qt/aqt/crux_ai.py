@@ -51,7 +51,9 @@ def ai_available() -> bool:
     return bool(_base_url() and _token())
 
 
-def chat(system: str, user: str, timeout: float = 10.0) -> str | None:
+def chat(
+    system: str, user: str, timeout: float = 10.0, max_tokens: int = 320
+) -> str | None:
     """Return the assistant text, or None on any failure/misconfiguration."""
     base = _base_url()
     token = _token()
@@ -67,7 +69,7 @@ def chat(system: str, user: str, timeout: float = 10.0) -> str | None:
                 {"role": "user", "content": user},
             ],
             "temperature": 0.3,
-            "max_tokens": 320,
+            "max_tokens": max_tokens,
         }
     ).encode("utf-8")
     req = urllib.request.Request(endpoint, data=body, method="POST")

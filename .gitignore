@@ -50,6 +50,8 @@ ankidroid_build.log
 aar_build.log
 wheels_build.log
 *_build.log
+bench_out.log
+cargo_test.log
 crux_home.png
 crux_error.log
 submission/

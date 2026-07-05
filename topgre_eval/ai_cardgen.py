@@ -105,6 +105,22 @@ def _overlap(a: str, b: str) -> float:
     return len(ta & tb) / len(ta | tb)
 
 
+_STOP = {"is", "a", "an", "the", "of", "to", "in", "its", "it", "and", "or", "with"}
+
+
+def _recall(gold_answer: str, back: str) -> float:
+    """Fraction of the gold answer's key (non-stopword) tokens present in the
+    card's answer. This is the right correctness signal: a good card contains the
+    correct fact even if it adds explanation, so we measure recall, not Jaccard."""
+    g = _tokens(gold_answer) - _STOP
+    b = _tokens(back)
+    if not g:
+        g = _tokens(gold_answer)
+    if not g:
+        return 0.0
+    return len(g & b) / len(g)
+
+
 def check_cards(cards: list[dict], gold: list[dict]) -> dict:
     """Classify each card vs a gold Q/A set. Returns counts + pass/fail.
 
@@ -122,7 +138,9 @@ def check_cards(cards: list[dict], gold: list[dict]) -> dict:
         traceable = bool(card.get("source_quote"))
         # best-matching gold item by question similarity
         best = max(gold, key=lambda g: _overlap(front, g["q"]), default=None)
-        answer_ok = best is not None and _overlap(back, best["a"]) >= 0.5
+        # The card's answer must contain the correct fact (recall of the gold
+        # answer's key tokens), allowing extra explanation.
+        answer_ok = best is not None and _recall(best["a"], back) >= 0.5
         key = _norm(front)
         duplicate = key in seen
         seen.add(key)

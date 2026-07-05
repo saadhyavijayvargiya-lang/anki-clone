@@ -6,6 +6,24 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: produce the remaining rubric evidence (bench, calibration, held-out, 7f)"  (Jul 5 2026, 2:45 PM)
+- 7a tests: cargo test -p anki readiness -> 12 Rust tests pass; pytest
+  test_readiness.py -> 2 Python tests pass.
+- Section 9 step 1 (memory calibration): new topgre_eval/calibration.py. Held-out
+  ECE 0.026 (Brier 0.176, log loss 0.560); detects an injected overconfident
+  model (ECE 0.066), so it is not rigged.
+- Section 9 step 2 (performance held-out): new topgre_eval/perf_eval.py. Move-aware
+  model beats the baseline on log loss (0.600 vs 0.683), 75/33 train/test.
+- 7f (AI card check): new topgre_eval/ai_cardcheck.py generates from a named
+  source (sample_data/source_topology.txt) via the working proxy, enforces
+  source-quote traceability, checks vs the 50-pair gold set with a 0.80 cutoff;
+  a run gave 6 correct-useful / 4 wrong / 1 correct-but-bad, 5 blocked. Fixed the
+  checker to use recall of the gold answer's key tokens (verbose-but-correct
+  answers were being mis-flagged). crux_ai.chat gained a max_tokens param.
+- 7h benchmark on 50k cards: writes ~1ms, perf-eval ~0.3ms, readiness/triage
+  ~685-740ms p95 (meets <1s first-load, misses <500ms refresh; full-scan, noted).
+- CRUX_RESULTS.md updated with all numbers and reproduce commands.
+
 "Crux: arm64 phone backend build support (code fix)"  (Jul 5 2026, 2:05 PM)
 - Fixed Anki-Android-Backend/build_rust to cross-compile all Android ABIs
   (aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android) on

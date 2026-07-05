@@ -1,0 +1,35 @@
+Point-Set Topology: Selected Results (source chapter for card generation)
+
+A topological space is a set X with a collection of open sets closed under
+arbitrary unions and finite intersections. A set is closed if its complement is
+open; a set is clopen if it is both open and closed. The closure of a set A is A
+together with its limit points, and the interior of A is the largest open set
+contained in A. The boundary of A is its closure minus its interior. A set A is
+dense in X when its closure is all of X; for example, the rationals are dense in
+the real line.
+
+A map is continuous if the preimage of every open set is open; equivalently, the
+preimage of every closed set is closed. The composition of continuous maps is
+continuous. By the pasting lemma, a map that is continuous on each of two closed
+sets covering X and that agrees on their overlap is continuous on X.
+
+A space is compact if every open cover has a finite subcover. The continuous
+image of a compact set is compact, and a closed subset of a compact space is
+compact. By the Heine-Borel theorem, a subset of Euclidean space is compact if
+and only if it is closed and bounded. A continuous real-valued function on a
+compact space attains its maximum and minimum.
+
+A space is connected if it is not the union of two disjoint nonempty open sets.
+The continuous image of a connected set is connected, and the connected subsets
+of the real line are exactly the intervals. Every path-connected space is
+connected, though the converse fails: the topologist's sine curve is connected
+but not path-connected.
+
+A space is Hausdorff if any two distinct points have disjoint open neighborhoods.
+Every metric space is Hausdorff, and in a Hausdorff space a convergent sequence
+has a unique limit. A compact subset of a Hausdorff space is closed. A continuous
+bijection from a compact space to a Hausdorff space is a homeomorphism.
+
+Compactness and connectedness are topological invariants, so they are preserved
+by homeomorphisms. Because the closed interval is compact and the open interval
+is not, the two are not homeomorphic.
