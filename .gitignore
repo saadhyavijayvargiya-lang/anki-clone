@@ -51,4 +51,6 @@ aar_build.log
 wheels_build.log
 *_build.log
 crux_home.png
+crux_error.log
 submission/
+sync_server_data/

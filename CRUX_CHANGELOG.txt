@@ -6,6 +6,16 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: self-hosted Anki sync server for desktop <-> phone"  (Jul 5 2026, 12:52 PM)
+- Added tools/crux_sync_server.ps1 and SYNC_SETUP.md to run Anki's own (shared
+  Rust engine) sync server locally, so the desktop app and AnkiDroid sync the
+  same collection with no AnkiWeb account. Verified: it binds 0.0.0.0:8080 and
+  responds. Uses Anki's built-in offline-first sync and revlog-merge conflict
+  rule (reuse the shared engine, do not reinvent sync). Doc includes the exact
+  desktop/emulator/phone endpoints and the 7b offline + conflict test procedure.
+- Chose Anki sync over Firebase deliberately: Firebase would mean rebuilding a
+  parallel sync + merge layer, which fights the spec's conflict tests.
+
 "Crux: fix crash when reopening the readiness/router dialogs"  (Jul 3 2026, 9:24 PM)
 - Reopening the Router drill or Readiness dialog crashed with "wrapped C/C++
   object ... has been deleted". Cause: the dialogs never told Anki's
