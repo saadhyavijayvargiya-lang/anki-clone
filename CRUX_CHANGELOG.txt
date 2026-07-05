@@ -6,6 +6,24 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: triage queue ranks by exam danger, not quick cards"  (Jul 5 2026, 5:20 PM)
+- Fixed the triage queue showing mostly "examples". The Rust
+  points_at_stake_queue now ranks by points at stake = exam weight x weakness x
+  (1 + how often you miss that move-type on exams), and orders by that value
+  instead of value-per-minute. Value-per-minute rewarded the quick "examples"
+  cards (1 min each) even though they have the highest exam accuracy, so they
+  led the queue; now the types you actually miss (compactness, separation,
+  connectedness) come first and examples ranks last. This also matches the spec
+  ("sort by topic weight times weakness") better than the old time metric.
+- readiness Rust tests: renamed queue_orders_new_cards_by_time_efficiency ->
+  queue_orders_new_cards_by_points_at_stake, added
+  queue_prioritizes_types_you_miss_on_exam; 13 readiness tests pass.
+- seed_demo.py now leaves the last step of each decision chain new (58 reviewed,
+  29 new spread across every move-type) so the queue always has a full spread to
+  rank. Verified on the seeded deck: top is connectedness/separation/
+  homeomorphism/compactness, examples last.
+- Updated the readiness page triage-queue description to match the new ranking.
+
 "Crux: arm64 real-device APK built and verified"  (Jul 5 2026, 4:00 PM)
 - Built the mobile backend .aar for all ABIs and the APKs. Verified the .aar now
   contains jni/arm64-v8a/librsdroid.so (and armeabi-v7a, x86_64), and the arm64

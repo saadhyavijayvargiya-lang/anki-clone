@@ -166,6 +166,17 @@ impl Collection {
         let cids = self.search_cards(&query, SortMode::NoOrder)?;
         let timing = self.timing_today()?;
 
+        // Per-move-type miss rate (1 - exam accuracy) from recorded attempts, so
+        // triage surfaces the types you actually miss on the exam, not just the
+        // quickest cards. A type you ace (e.g. examples) should not dominate.
+        let perf = self.load_perf_data();
+        let mut miss: HashMap<String, f64> = HashMap::new();
+        for (mt, stats) in &perf.moves {
+            if stats.total > 0 {
+                miss.insert(mt.clone(), 1.0 - (stats.correct as f64 / stats.total as f64));
+            }
+        }
+
         let mut cards: Vec<anki_proto::readiness::PointsAtStakeCard> =
             Vec::with_capacity(cids.len());
         for cid in cids {
@@ -173,7 +184,9 @@ impl Collection {
             let move_type = self.move_type_for_card(&card)?;
             let profile = default_move_profile(&move_type);
             let weakness = 1.0 - self.card_retrievability(&card, &timing);
-            let value = value_at_stake(profile.weight, weakness);
+            let miss_rate = *miss.get(&move_type).unwrap_or(&0.0);
+            // Points at stake = exam weight x weakness x (1 + exam miss-rate).
+            let value = value_at_stake(profile.weight, weakness) * (1.0 + miss_rate);
             let efficiency = time_efficiency(value, profile.minutes);
             cards.push(anki_proto::readiness::PointsAtStakeCard {
                 card_id: cid.0,
@@ -185,8 +198,9 @@ impl Collection {
             });
         }
 
-        // Interleaved (default): pure value-per-minute. Blocked (ablation):
-        // group by move-type first. Ties broken by card_id for determinism.
+        // Order by points at stake (danger) descending, so the highest-value
+        // cards come first. Interleaved (default) mixes move-types; blocked
+        // practice (ablation) groups by move-type first. Ties by card_id.
         let interleaving = self.interleaving_enabled();
         cards.sort_by(|a, b| {
             let grouped = if interleaving {
@@ -196,8 +210,8 @@ impl Collection {
             };
             grouped
                 .then(
-                    b.time_efficiency
-                        .partial_cmp(&a.time_efficiency)
+                    b.points_at_stake
+                        .partial_cmp(&a.points_at_stake)
                         .unwrap_or(std::cmp::Ordering::Equal),
                 )
                 .then(a.card_id.cmp(&b.card_id))
@@ -644,30 +658,47 @@ mod tests {
     }
 
     #[test]
-    fn queue_orders_new_cards_by_time_efficiency() {
+    fn queue_orders_new_cards_by_points_at_stake() {
         let mut col = Collection::new();
-        // New cards -> weakness 1.0, so efficiency = weight / minutes:
-        //   examples    0.6 / 1.0 = 0.600
-        //   continuity  0.7 / 1.5 = 0.467
-        //   compactness 1.0 / 3.0 = 0.333
+        // New cards -> weakness 1.0 and no exam attempts -> miss 0, so points at
+        // stake = exam weight. Highest exam weight leads (not the quickest type):
+        //   compactness 1.0
+        //   continuity  0.7
+        //   examples    0.6
         add_move_note(&mut col, "compactness");
         add_move_note(&mut col, "examples");
         add_move_note(&mut col, "continuity");
 
         let resp = col.points_at_stake_queue("", 0).unwrap();
         let order: Vec<&str> = resp.cards.iter().map(|c| c.move_type.as_str()).collect();
-        assert_eq!(order, vec!["examples", "continuity", "compactness"]);
+        assert_eq!(order, vec!["compactness", "continuity", "examples"]);
 
         // New cards have no memory state -> maximal weakness.
         assert!(resp.cards.iter().all(|c| (c.weakness - 1.0).abs() < 1e-9));
-        // Efficiency is strictly descending.
+        // Points at stake is strictly descending.
         for pair in resp.cards.windows(2) {
-            assert!(pair[0].time_efficiency >= pair[1].time_efficiency);
+            assert!(pair[0].points_at_stake >= pair[1].points_at_stake);
         }
-        // The limit is respected.
+        // The limit is respected and keeps the highest-value card.
         let limited = col.points_at_stake_queue("", 2).unwrap();
         assert_eq!(limited.cards.len(), 2);
-        assert_eq!(limited.cards[0].move_type, "examples");
+        assert_eq!(limited.cards[0].move_type, "compactness");
+    }
+
+    #[test]
+    fn queue_prioritizes_types_you_miss_on_exam() {
+        let mut col = Collection::new();
+        // You ace examples but keep missing compactness on exam attempts. Even
+        // though examples is the "quick" type, compactness should lead triage.
+        add_move_note(&mut col, "compactness");
+        add_move_note(&mut col, "examples");
+        for _ in 0..10 {
+            col.record_exam_attempt("examples", true, 1000).unwrap();
+            col.record_exam_attempt("compactness", false, 1000).unwrap();
+        }
+
+        let resp = col.points_at_stake_queue("", 0).unwrap();
+        assert_eq!(resp.cards[0].move_type, "compactness");
     }
 
     #[test]
@@ -777,9 +808,10 @@ mod tests {
         add_move_note(&mut col, "examples");
         add_move_note(&mut col, "compactness");
 
-        // Interleaved (default): highest value-per-minute first -> examples leads.
+        // Interleaved (default): highest points at stake first -> compactness
+        // (exam weight 1.0) leads over examples (0.6).
         let inter = col.points_at_stake_queue("", 0).unwrap();
-        assert_eq!(inter.cards[0].move_type, "examples");
+        assert_eq!(inter.cards[0].move_type, "compactness");
 
         // Blocked (ablation): grouped by move-type alphabetically.
         col.set_config_json("topgreInterleaving", &false, false).unwrap();

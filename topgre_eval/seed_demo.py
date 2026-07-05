@@ -243,7 +243,10 @@ def main() -> None:
 
         model = col.models.by_name("Basic")
         total = 0
+        review_cids: list[int] = []  # steps 1..N-1: reviewed so Memory has data
+        new_cids: list[int] = []  # step N of each chain: left NEW for triage
         for ci, (move, steps) in enumerate(CHAINS, start=1):
+            last = len(steps)
             for si, (front, back) in enumerate(steps, start=1):
                 note = col.new_note(model)
                 note["Front"] = front
@@ -251,13 +254,18 @@ def main() -> None:
                 note.tags = [f"move::{move}", f"chain::c{ci}", f"step::{si}"]
                 col.add_note(note, did)
                 total += 1
+                # New card per note; last step stays new so every move-type is
+                # represented in the (danger-ranked) triage queue.
+                target = new_cids if si == last else review_cids
+                target.extend(int(c) for c in note.card_ids())
 
-        # Real reviews so Memory (FSRS) has data.
+        # Review steps 1..N-1 so Memory (FSRS) has data across every move-type,
+        # while the last step of each chain remains new (weakness = 1) so the
+        # triage queue surfaces a spread ranked by exam danger, not one type.
         reviewed = 0
-        for _ in range(total):
-            card = col.sched.getCard()
-            if card is None:
-                break
+        for cid in review_cids:
+            card = col.get_card(cid)
+            card.start_timer()  # get_card (unlike getCard) doesn't start it
             col.sched.answerCard(card, 3)  # Good
             reviewed += 1
 
@@ -283,7 +291,7 @@ def main() -> None:
         triaged = readiness.reorder_new_by_triage(col, f'deck:"{DECK_NAME}"')
         print(
             f"seeded {total} cards in {len(CHAINS)} chains | reviewed {reviewed} | "
-            f"attempts {attempts} | triaged {triaged}"
+            f"new {len(new_cids)} | attempts {attempts} | triaged {triaged}"
         )
     finally:
         col.close()

@@ -379,7 +379,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     <section class="panel">
         <div class="panel-head">
             <h2>Triage queue</h2>
-            <p>Ranked in Rust by points at stake: exam weight times weakness over expected minutes.</p>
+            <p>Ranked in Rust by points at stake: exam weight times weakness times how often you miss that move-type on exams.</p>
         </div>
         {#if queue.length}
             <div class="table-wrap">
