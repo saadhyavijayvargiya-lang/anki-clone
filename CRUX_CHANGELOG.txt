@@ -6,6 +6,14 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: project README + model description docs (handin deliverables)"  (Jul 5 2026, 1:35 PM)
+- Added CRUX_README.md: exam stated up front, AGPL-3.0 + Anki credit, build/run
+  for both apps, architecture overview, the Rust-change note with the list of
+  upstream files touched and merge difficulty, and an honest status section.
+- Added CRUX_MODELS.md: one section each for the Memory, Performance, and
+  Readiness models (formulas, ranges), the projected-score method, and the
+  give-up rule. These are required section-12 deliverables.
+
 "Crux: projected overall GRE Math Subject score from topology"  (Jul 5 2026, 1:00 PM)
 - Readiness now maps topology performance to a real-scale projected GRE Math
   Subject score (200 to 990), shown with a likely range and a confidence badge
