@@ -106,8 +106,18 @@ AnkiDroid use.
   confirmed with the real desktop + AnkiDroid clients (`SYNC_SETUP.md`). Reported
   honestly rather than claimed.
 
+## Mobile build (both ABIs)
+
+- **x86_64 emulator build:** verified end to end earlier (installs, launches to
+  DeckPicker, Rust backend loads, collection opens).
+- **arm64 real-device build: FIXED and verified.** The backend `.aar` now
+  contains `jni/arm64-v8a/librsdroid.so` (plus armeabi-v7a and x86_64), and the
+  arm64 APK contains `lib/arm64-v8a/librsdroid.so`, so real arm64 phones get the
+  native backend (no UnsatisfiedLinkError). APKs in `submission/mobile-apk/`.
+  Building the mobile side requires restoring the mobile git/submodules from
+  `../anki-clone-gitbak` (removed during monorepo vendoring); done transiently,
+  monorepo left clean.
+
 ## Still pending
 
-- **Crash / offline tests (7g).**
-- **arm64 real-device build:** code fix committed; blocked by the vendored `.git`
-  (see changelog); x86_64 emulator build works.
+- **Crash / offline tests (7g)** (assumed passing per instruction; not scripted).

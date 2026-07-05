@@ -6,6 +6,17 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: arm64 real-device APK built and verified"  (Jul 5 2026, 4:00 PM)
+- Built the mobile backend .aar for all ABIs and the APKs. Verified the .aar now
+  contains jni/arm64-v8a/librsdroid.so (and armeabi-v7a, x86_64), and the arm64
+  APK contains lib/arm64-v8a/librsdroid.so, so real arm64 phones get the native
+  backend and no longer crash with UnsatisfiedLinkError. Rebuilt APKs copied to
+  submission/mobile-apk/ (arm64 ~101 MB, x86_64 ~106 MB).
+- To build the mobile side, the mobile repos' git/submodules (removed during the
+  monorepo vendoring) were temporarily restored from ../anki-clone-gitbak, built,
+  then removed again; the monorepo tracking is unchanged (verified clean). This
+  restore is required for any future mobile rebuild.
+
 "Crux: 7b two-device sync + conflict test (engine-level)"  (Jul 5 2026, 3:20 PM)
 - Added topgre_eval/sync_test.py: two collection instances sync through the local
   Anki sync server (the shared Rust sync the desktop and phone use). Verified
