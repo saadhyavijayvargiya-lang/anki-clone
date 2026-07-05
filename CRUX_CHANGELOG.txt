@@ -6,7 +6,17 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
-"Crux: study-feature ablation harness (interleaving)"  (Jul 5 2026, 1:42 PM)
+"Crux: results report (leakage clean, paraphrase gap +0.254, ablation)"  (Jul 5 2026, 1:44 PM)
+- Ran the fairness/thesis tests and captured them in CRUX_RESULTS.md:
+  - Leakage (7e): CLEAN, no test item or near-copy in training.
+  - Paraphrase (7d): memory->performance gap +0.254 (recall 0.915 vs reworded
+    0.661) over 30 cards, with a per-move breakdown. Performance != memory.
+  - Ablation (section 8): interleaved beats blocked +2.8 pts; null vs plain Anki
+    at defaults (honest). Reproduce commands included.
+- Listed the still-pending numbers (benchmark, calibration, held-out perf, AI
+  card check, sync/conflict, crash tests) honestly.
+
+"Crux: study-feature ablation runner (interleaving)"  (Jul 5 2026, 1:42 PM)
 - Added topgre_eval/ablation.py: a fair, re-runnable, seed-averaged simulation
   comparing three arms at equal study time (blocked / plain Anki / interleaved)
   on mixed-type accuracy, with a pre-stated hypothesis. It is built to be able to
