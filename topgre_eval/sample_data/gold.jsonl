@@ -1,14 +1,50 @@
 {"q": "continuous image of a compact set", "a": "is compact", "move_type": "compactness"}
 {"q": "closed subset of a compact space", "a": "is compact", "move_type": "compactness"}
+{"q": "finite union of compact sets", "a": "is compact", "move_type": "compactness"}
+{"q": "Heine-Borel theorem in R^n", "a": "a set is compact iff it is closed and bounded", "move_type": "compactness"}
+{"q": "continuous real-valued function on a compact space", "a": "attains its maximum and minimum", "move_type": "compactness"}
+{"q": "product of two compact spaces", "a": "is compact", "move_type": "compactness"}
+{"q": "definition of a compact space", "a": "every open cover has a finite subcover", "move_type": "compactness"}
 {"q": "continuous image of a connected set", "a": "is connected", "move_type": "connectedness"}
 {"q": "union of connected sets sharing a common point", "a": "is connected", "move_type": "connectedness"}
-{"q": "open-set definition of continuity", "a": "preimage of every open set is open", "move_type": "continuity"}
+{"q": "connected subsets of the real line", "a": "are exactly the intervals", "move_type": "connectedness"}
+{"q": "a path-connected space", "a": "is connected", "move_type": "connectedness"}
+{"q": "continuous image of a path-connected set", "a": "is path-connected", "move_type": "connectedness"}
+{"q": "the closure of a connected set", "a": "is connected", "move_type": "connectedness"}
+{"q": "intermediate value theorem, topological form", "a": "the continuous image of a connected set is connected", "move_type": "connectedness"}
+{"q": "open-set definition of continuity", "a": "the preimage of every open set is open", "move_type": "continuity"}
+{"q": "composition of continuous maps", "a": "is continuous", "move_type": "continuity"}
+{"q": "pasting lemma condition", "a": "maps continuous on two closed sets that agree on the overlap paste to a continuous map", "move_type": "continuity"}
+{"q": "continuity in terms of closed sets", "a": "the preimage of every closed set is closed", "move_type": "continuity"}
+{"q": "a constant map between topological spaces", "a": "is continuous", "move_type": "continuity"}
 {"q": "Hausdorff separation condition", "a": "distinct points have disjoint open neighborhoods", "move_type": "separation"}
 {"q": "compact subset of a Hausdorff space", "a": "is closed", "move_type": "separation"}
+{"q": "every metric space is", "a": "Hausdorff", "move_type": "separation"}
+{"q": "in a Hausdorff space, a convergent sequence", "a": "has a unique limit", "move_type": "separation"}
+{"q": "singletons in a T1 space", "a": "are closed", "move_type": "separation"}
 {"q": "continuous bijection from a compact space to a Hausdorff space", "a": "is a homeomorphism", "move_type": "homeomorphism"}
 {"q": "are the open interval and closed interval homeomorphic", "a": "no, compactness is a topological invariant", "move_type": "homeomorphism"}
+{"q": "are R and R^2 homeomorphic", "a": "no, removing a point disconnects R but not R^2", "move_type": "homeomorphism"}
+{"q": "a property preserved by homeomorphism", "a": "a topological invariant, such as compactness or connectedness", "move_type": "homeomorphism"}
+{"q": "definition of a homeomorphism", "a": "a continuous bijection with a continuous inverse", "move_type": "homeomorphism"}
 {"q": "closure of a set A", "a": "A together with its limit points", "move_type": "interior-closure-boundary"}
+{"q": "boundary of a set", "a": "its closure minus its interior", "move_type": "interior-closure-boundary"}
+{"q": "interior of a set", "a": "the largest open set contained in it", "move_type": "interior-closure-boundary"}
+{"q": "a set is dense iff", "a": "its closure is the whole space", "move_type": "interior-closure-boundary"}
+{"q": "closure of the rationals in R", "a": "all of R", "move_type": "interior-closure-boundary"}
 {"q": "a set is closed iff", "a": "it equals its closure", "move_type": "open-closed-sets"}
+{"q": "arbitrary union of open sets", "a": "is open", "move_type": "open-closed-sets"}
+{"q": "finite intersection of open sets", "a": "is open", "move_type": "open-closed-sets"}
+{"q": "arbitrary intersection of closed sets", "a": "is closed", "move_type": "open-closed-sets"}
+{"q": "a clopen set is", "a": "both open and closed", "move_type": "open-closed-sets"}
+{"q": "conditions for a family to be a basis for a topology", "a": "it covers X and every point of an intersection of two members lies in a member inside that intersection", "move_type": "bases-subbases"}
+{"q": "how a subbasis generates a topology", "a": "take finite intersections, then arbitrary unions", "move_type": "bases-subbases"}
+{"q": "basis for the product topology", "a": "products U x V of open sets", "move_type": "bases-subbases"}
+{"q": "basis for the standard topology on R", "a": "the open intervals (a, b)", "move_type": "bases-subbases"}
 {"q": "connected but not path-connected example", "a": "the topologist's sine curve", "move_type": "examples"}
 {"q": "topology where every subset is open", "a": "the discrete topology", "move_type": "examples"}
 {"q": "coarsest topology on a set", "a": "the indiscrete (trivial) topology", "move_type": "examples"}
+{"q": "the lower limit topology on R with basis [a, b)", "a": "the Sorgenfrey line", "move_type": "examples"}
+{"q": "a space that is compact and T1 but not Hausdorff", "a": "an infinite set with the cofinite topology", "move_type": "examples"}
+{"q": "a topology strictly finer than the standard topology on R", "a": "the lower limit (Sorgenfrey) topology", "move_type": "examples"}
+{"q": "open balls in a metric space", "a": "form a basis for the metric topology", "move_type": "bases-subbases"}

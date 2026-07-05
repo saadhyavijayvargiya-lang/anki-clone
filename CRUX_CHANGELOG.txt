@@ -6,6 +6,12 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: expand AI gold set to 50 pairs (7f)"  (Jul 5 2026, 1:47 PM)
+- Expanded topgre_eval/sample_data/gold.jsonl from 14 to 50 verified topology
+  question/answer pairs across all nine move types, the count the AI card check
+  (7f) requires. Updated AI_SETUP.md accordingly. The generated-card checker can
+  now be run against a proper gold set.
+
 "Crux: results report (leakage clean, paraphrase gap +0.254, ablation)"  (Jul 5 2026, 1:44 PM)
 - Ran the fairness/thesis tests and captured them in CRUX_RESULTS.md:
   - Leakage (7e): CLEAN, no test item or near-copy in training.

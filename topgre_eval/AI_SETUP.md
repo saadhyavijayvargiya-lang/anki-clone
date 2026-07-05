@@ -1,4 +1,4 @@
-# TopGRE AI setup — where to put your API key
+# TopGRE AI setup - where to put your API key
 
 The AI card generator is **off by default**. It turns on only when an API key is
 present in your environment. Nothing is hardcoded and no key is committed.
@@ -7,17 +7,17 @@ present in your environment. Nothing is hardcoded and no key is committed.
 Create an OpenAI API key (https://platform.openai.com/api-keys). Any
 OpenAI-compatible provider works if you also set a base URL (see step 4).
 
-## 2. Set the key — pick ONE method
+## 2. Set the key - pick ONE method
 
 ### Method A (recommended): environment variable
 The code reads the key from the environment variable **`OPENAI_API_KEY`**.
 
-PowerShell — current session only:
+PowerShell - current session only:
 ```powershell
 $env:OPENAI_API_KEY = "sk-...yourkey..."
 ```
 
-PowerShell — persist for future sessions:
+PowerShell - persist for future sessions:
 ```powershell
 setx OPENAI_API_KEY "sk-...yourkey..."
 ```
@@ -37,7 +37,7 @@ then load it before running:
 Get-Content topgre_eval\.env | ForEach-Object { if ($_ -match '^(.+?)=(.+)$') { [Environment]::SetEnvironmentVariable($matches[1], $matches[2]) } }
 ```
 
-### Method C (most secure): Cloudflare Worker proxy — key lives in Cloudflare, not on any machine
+### Method C (most secure): Cloudflare Worker proxy - key lives in Cloudflare, not on any machine
 Use the Worker in `cf-openai-proxy/`. The real key is a Cloudflare secret you add
 from the terminal; the client only ever holds a `PROXY_TOKEN`. Full steps in
 `cf-openai-proxy/README.md`; the short version:
@@ -90,5 +90,5 @@ out\pyenv\Scripts\python topgre_eval\ai_cardgen.py --check-only topgre_eval\gene
 - **Runs with AI off:** with no key set, generation is disabled and the app +
   the three scores still work from the non-AI engine.
 
-Note: `sample_data/gold.jsonl` ships with 14 starter pairs — expand it to the
-full 50 required by the challenge before reporting final numbers.
+Note: `sample_data/gold.jsonl` ships with 50 gold pairs across all nine move
+types, the count the challenge asks for.
