@@ -293,16 +293,46 @@ class DeckBrowser:
         if r is None:
             return "Study a few cards and log exam attempts to start an estimate."
         if getattr(r.readiness, "available", False):
-            pctval = round(r.readiness.value * 100)
             return (
-                f"Projected {pctval}% on the point-set topology cluster. "
-                "Topology only, not a full GRE score."
+                "Projected from your topology performance, the cluster that "
+                "separates the top scorers."
             )
         if getattr(r.memory, "available", False) or getattr(
             r.performance, "available", False
         ):
             return "Building your estimate. Keep logging exam attempts to unlock readiness."
         return "No readiness estimate yet. Study a few cards and log exam attempts to begin."
+
+    def _projected_score(self, r: Any) -> str:
+        if r is None or not getattr(r.readiness, "available", False):
+            return (
+                "<div class='proj-banner withheld'>"
+                "<div class='proj-left'>"
+                "<span class='proj-label'>Projected GRE Math Subject score</span>"
+                "<span class='proj-score na'>withheld</span>"
+                "<span class='proj-range'>not enough topology evidence yet</span>"
+                "</div></div>"
+            )
+
+        def to_score(v: float) -> int:
+            # Topology performance -> 200..990. High baseline: topology is the
+            # differentiator, so strength elsewhere is assumed.
+            return round(min(990, max(200, 700 + v * 200)))
+
+        score = to_score(r.readiness.value)
+        lo = to_score(r.readiness.lower)
+        hi = to_score(r.readiness.upper)
+        conf = "moderate" if r.coverage >= 0.6 else "low"
+        return (
+            "<div class='proj-banner'>"
+            "<div class='proj-left'>"
+            "<span class='proj-label'>Projected GRE Math Subject score</span>"
+            f"<span class='proj-score'>{score}</span>"
+            f"<span class='proj-range'>likely {lo} to {hi}</span>"
+            "</div>"
+            f"<span class='proj-conf {conf}'>{conf} confidence</span>"
+            "</div>"
+        )
 
     def _render_crux_home(self, data: RenderData, content: DeckBrowserContent) -> str:
         r = data.readiness
@@ -356,6 +386,7 @@ class DeckBrowser:
     <p class="crux-status">{status}</p>
     {actions}
   </header>
+  {self._projected_score(r)}
   <section class="score-strip">{chips}</section>
   {best_next}
   <div class="crux-meta">{meta}</div>

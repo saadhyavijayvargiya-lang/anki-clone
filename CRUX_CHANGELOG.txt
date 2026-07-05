@@ -6,6 +6,15 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: projected overall GRE Math Subject score from topology"  (Jul 5 2026, 1:00 PM)
+- Readiness now maps topology performance to a real-scale projected GRE Math
+  Subject score (200 to 990), shown with a likely range and a confidence badge
+  (low until topology coverage is high), on both the home dashboard and the
+  readiness page. Withholds the number when there isn't enough evidence.
+- Method (documented in code): projected = 700 + topology_readiness x 200,
+  clamped to 200..990. High baseline is deliberate: topology is the cluster that
+  separates top scorers, so strength elsewhere is assumed and stated.
+
 "Crux: self-hosted Anki sync server for desktop <-> phone"  (Jul 5 2026, 12:52 PM)
 - Added tools/crux_sync_server.ps1 and SYNC_SETUP.md to run Anki's own (shared
   Rust engine) sync server locally, so the desktop app and AnkiDroid sync the

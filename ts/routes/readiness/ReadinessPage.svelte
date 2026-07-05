@@ -159,6 +159,26 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         return `${Math.round(x * 100)}%`;
     }
 
+    // Topology performance -> overall GRE Math Subject projection (200 to 990).
+    // Topology is what separates the top scorers, so we assume the rest of the
+    // exam is strong: a weak-topology student still lands near BASELINE, and
+    // strong topology reaches TOP. This is the stated method; BASELINE and TOP
+    // are the only assumptions, and confidence stays low until coverage is high.
+    const PROJ_BASELINE = 700;
+    const PROJ_TOP = 900;
+    function toScore(v: number): number {
+        const raw = PROJ_BASELINE + v * (PROJ_TOP - PROJ_BASELINE);
+        return Math.round(Math.min(990, Math.max(200, raw)));
+    }
+    $: projected = info.readiness?.available
+        ? {
+              score: toScore(info.readiness.value),
+              lo: toScore(info.readiness.lower),
+              hi: toScore(info.readiness.upper),
+              confidence: info.coverage >= 0.6 ? "moderate" : "low",
+          }
+        : null;
+
     $: updated = info.updatedAt
         ? new Date(Number(info.updatedAt) * 1000).toLocaleString()
         : "not yet";
@@ -257,6 +277,30 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
             </div>
         {/if}
     </header>
+
+    <section class="projected" aria-label="Projected score">
+        {#if projected}
+            <div class="proj-main">
+                <span class="proj-label">Projected GRE Math Subject score</span>
+                <span class="proj-score">{projected.score}</span>
+                <span class="proj-range">likely {projected.lo} to {projected.hi}</span>
+            </div>
+            <div class="proj-meta">
+                <span class="proj-conf {projected.confidence}">{projected.confidence} confidence</span>
+                <span class="proj-note">
+                    Mapped from topology performance ({pct(info.readiness.value)}) on the
+                    200 to 990 scale, assuming strength outside topology. Topology
+                    coverage {pct(info.coverage)}.
+                </span>
+            </div>
+        {:else}
+            <div class="proj-main withheld">
+                <span class="proj-label">Projected GRE Math Subject score</span>
+                <span class="proj-score na">withheld</span>
+                <span class="proj-range">not enough topology evidence yet</span>
+            </div>
+        {/if}
+    </section>
 
     <section class="stats" aria-label="Summary">
         <div class="stat">
@@ -663,6 +707,89 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     .bn-text {
         color: var(--ct-ink);
         font-weight: 500;
+    }
+
+    /* Projected score */
+    .projected {
+        margin: 0 0 1.75rem;
+        padding: 1.4rem 1.6rem;
+        border-radius: 18px;
+        background:
+            linear-gradient(var(--ct-surface), var(--ct-surface)) padding-box,
+            var(--ct-gradient) border-box;
+        border: 1.5px solid transparent;
+        box-shadow: var(--ct-shadow);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .proj-main {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+    .proj-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--ct-primary);
+    }
+    .proj-score {
+        font-size: 3.2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        background: var(--ct-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    .proj-score.na {
+        font-size: 1.8rem;
+        -webkit-text-fill-color: var(--ct-muted);
+        color: var(--ct-muted);
+    }
+    .proj-range {
+        font-size: 0.9rem;
+        color: var(--ct-muted);
+    }
+    .proj-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.4rem;
+        max-width: 22rem;
+        text-align: right;
+    }
+    .proj-conf {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+    }
+    .proj-conf.low {
+        color: #b45309;
+        background: rgba(245, 158, 11, 0.15);
+    }
+    .proj-conf.moderate {
+        color: #047857;
+        background: rgba(16, 185, 129, 0.14);
+    }
+    .proj-note {
+        font-size: 0.75rem;
+        color: var(--ct-muted);
+        line-height: 1.45;
+    }
+    @media (max-width: 40rem) {
+        .proj-meta {
+            align-items: flex-start;
+            text-align: left;
+        }
     }
 
     /* Stats */
