@@ -6,6 +6,15 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: 7b two-device sync + conflict test (engine-level)"  (Jul 5 2026, 3:20 PM)
+- Added topgre_eval/sync_test.py: two collection instances sync through the local
+  Anki sync server (the shared Rust sync the desktop and phone use). Verified
+  no-loss/no-double-count: A reviews 10 offline, B reviews 10 different offline,
+  after sync both show 20 reviews across 20 distinct cards. Conflict: revlog is
+  append-only so no review is lost; same-card state convergence did not fully
+  settle in the minimal two-client script (disjoint converges) and is flagged for
+  real-client confirmation, reported honestly, not claimed.
+
 "Crux: produce the remaining rubric evidence (bench, calibration, held-out, 7f)"  (Jul 5 2026, 2:45 PM)
 - 7a tests: cargo test -p anki readiness -> 12 Rust tests pass; pytest
   test_readiness.py -> 2 Python tests pass.

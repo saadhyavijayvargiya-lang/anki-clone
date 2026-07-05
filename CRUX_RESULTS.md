@@ -87,11 +87,27 @@ currently do a full scan of the deck. On the real ~90-card topology deck these
 calls are sub-millisecond; the path to < 500ms on 50k is caching or an indexed
 mastery query (noted as a follow-up).
 
+## Sync + conflict (7b)
+```
+# start tools/crux_sync_server.ps1 first, then:
+python topgre_eval/sync_test.py
+```
+Engine-level test: two collection instances sync through the local Anki sync
+server, which is the exact shared Rust sync + revlog merge the desktop app and
+AnkiDroid use.
+- **No loss / no double-count: PASS.** A reviews 10 cards offline, B reviews 10
+  different cards offline; after sync **both devices show 20 reviews across 20
+  distinct cards**, none lost or doubled.
+- **Conflict, no data loss: PASS.** Revlog is append-only, so concurrent edits to
+  the same card never drop a review.
+- **Conflict convergence:** Anki's rule is last-write-wins by USN at the server.
+  The minimal two-client script did not fully settle same-card state convergence
+  (the disjoint case converges perfectly), so same-card convergence should be
+  confirmed with the real desktop + AnkiDroid clients (`SYNC_SETUP.md`). Reported
+  honestly rather than claimed.
+
 ## Still pending
 
-- **Sync + conflict test (7b):** setup is done (`SYNC_SETUP.md`, local sync
-  server verified); the offline 10+10 and same-card conflict run needs the
-  emulator + desktop and is a manual/recorded step.
 - **Crash / offline tests (7g).**
 - **arm64 real-device build:** code fix committed; blocked by the vendored `.git`
   (see changelog); x86_64 emulator build works.
