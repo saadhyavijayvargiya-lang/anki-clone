@@ -6,6 +6,19 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: arm64 phone backend build support (code fix)"  (Jul 5 2026, 2:05 PM)
+- Fixed Anki-Android-Backend/build_rust to cross-compile all Android ABIs
+  (aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android) on
+  Windows; the previous code hardcoded x86_64 only, so the arm64 APK shipped
+  without librsdroid.so and would crash on a real phone. Rust Android targets
+  installed.
+- KNOWN BLOCKER (build environment, not code): rebuilding the mobile backend
+  currently fails because vendoring the mobile repos into the monorepo removed
+  their .git and nested translation submodules (ftl/core-repo, ftl/qt-repo).
+  Restoring the full mobile git/submodule graph (backed up at
+  ../anki-clone-gitbak) is needed before the arm64 .aar/APK can be rebuilt. The
+  x86_64 emulator build is unaffected and works.
+
 "Crux: expand AI gold set to 50 pairs (7f)"  (Jul 5 2026, 1:47 PM)
 - Expanded topgre_eval/sample_data/gold.jsonl from 14 to 50 verified topology
   question/answer pairs across all nine move types, the count the AI card check

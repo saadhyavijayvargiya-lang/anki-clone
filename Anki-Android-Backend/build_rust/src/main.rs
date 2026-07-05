@@ -228,8 +228,8 @@ fn add_android_rust_targets(all_archs: bool) -> Result<&'static [&'static str]> 
         add_rust_targets(&["aarch64-linux-android"])?;
         &["-t", "arm64-v8a"]
     } else {
-        add_rust_targets(&["x86_64-linux-android"])?;
-        &["-t", "x86_64"]
+        add_rust_targets(&["aarch64-linux-android", "armv7-linux-androideabi", "x86_64-linux-android"])?;
+        &["-t", "aarch64-linux-android", "-t", "armv7-linux-androideabi", "-t", "x86_64-linux-android"]
     })
 }
 
