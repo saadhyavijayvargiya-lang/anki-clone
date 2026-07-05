@@ -6,6 +6,17 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: study-feature ablation harness (interleaving)"  (Jul 5 2026, 1:42 PM)
+- Added topgre_eval/ablation.py: a fair, re-runnable, seed-averaged simulation
+  comparing three arms at equal study time (blocked / plain Anki / interleaved)
+  on mixed-type accuracy, with a pre-stated hypothesis. It is built to be able to
+  FAIL: retention is a pure spacing model, and interleaving's discrimination
+  benefit is an explicit knob defaulting to 0.
+- Result at defaults: interleaved beats blocked by ~2.8 pts (spacing beats
+  massing) but shows no advantage over plain Anki (honest null, reported as-is);
+  the advantage over plain appears only if you assume a discrimination benefit
+  (--disc-bonus). This is the section-8 fair test.
+
 "Crux: project README + model description docs (handin deliverables)"  (Jul 5 2026, 1:35 PM)
 - Added CRUX_README.md: exam stated up front, AGPL-3.0 + Anki credit, build/run
   for both apps, architecture overview, the Rust-change note with the list of
