@@ -41,7 +41,6 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     let idx = 0;
     let chosen: string | null = null;
     let revealed = false;
-    let methodShown = false;
     let questionStart = Date.now();
 
     let answered = 0;
@@ -85,7 +84,6 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         idx = 0;
         chosen = null;
         revealed = false;
-        methodShown = false;
         answered = 0;
         correctCount = 0;
         for (const k of Object.keys(missedTypes)) {
@@ -142,15 +140,10 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         }
     }
 
-    function showMethod(): void {
-        methodShown = true;
-    }
-
     function next(): void {
         idx += 1;
         chosen = null;
         revealed = false;
-        methodShown = false;
         explainText = "";
         questionStart = Date.now();
     }
@@ -163,11 +156,6 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
             const n = Number.parseInt(e.key, 10);
             if (n >= 1 && n <= card.options.length) {
                 choose(card.options[n - 1]);
-            }
-        } else if (!methodShown) {
-            if (e.key === "Enter" || e.key === " " || e.key.toLowerCase() === "m") {
-                e.preventDefault();
-                showMethod();
             }
         } else if (e.key === "Enter" || e.key.toLowerCase() === "n") {
             next();
@@ -282,41 +270,30 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                     <span class="right-type">{label(card.moveType)}</span>
                 </div>
 
-                {#if !methodShown}
-                    <div class="recall">
-                        <span class="m-key">Now recall the move</span>
-                        <p class="recall-hint">
-                            What move solves a {label(card.moveType)} problem? Think
-                            it through, then check.
-                        </p>
-                        <button class="btn primary" on:click={showMethod}>Show the move</button>
-                    </div>
-                {:else}
+                <div class="move">
+                    <span class="m-key">The move</span>
+                    <p>{card.method}</p>
+                </div>
+                {#if card.execute}
                     <div class="move">
-                        <span class="m-key">The move</span>
-                        <p>{card.method}</p>
-                    </div>
-                    {#if card.execute}
-                        <div class="move">
-                            <span class="m-key">Then</span>
-                            <p>{card.execute}</p>
-                        </div>
-                    {/if}
-                    {#if explainText}
-                        <div class="explain">
-                            <span class="m-key">Why this routes here</span>
-                            <p>{explainText}</p>
-                        </div>
-                    {/if}
-                    <div class="reveal-actions">
-                        <button class="btn ghost" on:click={explain} disabled={explainLoading}>
-                            {explainLoading ? "Thinking" : "Explain why"}
-                        </button>
-                        <button class="btn primary" on:click={next}>
-                            {idx + 1 >= cards.length ? "See results" : "Next problem"}
-                        </button>
+                        <span class="m-key">Then</span>
+                        <p>{card.execute}</p>
                     </div>
                 {/if}
+                {#if explainText}
+                    <div class="explain">
+                        <span class="m-key">Why this routes here</span>
+                        <p>{explainText}</p>
+                    </div>
+                {/if}
+                <div class="reveal-actions">
+                    <button class="btn ghost" on:click={explain} disabled={explainLoading}>
+                        {explainLoading ? "Thinking" : "Explain why"}
+                    </button>
+                    <button class="btn primary" on:click={next}>
+                        {idx + 1 >= cards.length ? "See results" : "Next problem"}
+                    </button>
+                </div>
             </section>
         {/if}
     {/if}
@@ -606,11 +583,6 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     .move p {
         margin: 0;
         color: var(--ct-ink);
-    }
-    .recall .recall-hint {
-        margin: 0 0 0.85rem;
-        color: var(--ct-muted);
-        line-height: 1.5;
     }
     .explain {
         margin: 0.25rem 0 0.75rem;

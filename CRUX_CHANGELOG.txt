@@ -6,6 +6,15 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: router drill stops forcing a hard free-recall of the move"  (Jul 5 2026, 9:05 PM)
+- After you route a problem to its type, the drill now shows the move and the
+  execute step directly, instead of gating them behind a "Now recall the move ->
+  Show the move" free-recall challenge that felt too hard. Routing (problem ->
+  type) stays the graded skill; the move is shown as the answer and teaching.
+- Removed the methodShown gate, showMethod(), its keyboard shortcut, and the
+  now-unused .recall CSS. Rebuilt sveltekit; verified the old prompt is gone
+  from the served bundle. Reopen the Router drill to pick it up.
+
 "Crux: readiness heatmap shows routing accuracy and drills weak types"  (Jul 5 2026, 6:00 PM)
 - The readiness "Coverage and danger by type" heatmap now shows your exam
   routing accuracy per type (correct/total from recorded attempts). cruxTypeMap
