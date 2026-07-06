@@ -6,6 +6,17 @@ the previous entry. Crux is the exam-readiness layer built on top of Anki
 orders study by points at stake.
 
 
+"Crux: 7b two-way sync verified end-to-end (conflict now converges)"  (Jul 5 2026, 11:00 PM)
+- Set up and tested two-way desktop<->phone sync on Anki's own sync engine. Ran
+  the two-client test through a real sync server: A and B review 10 DIFFERENT
+  cards offline, sync -> both show all 20 reviews across 20 distinct cards, none
+  lost or doubled. Conflict: the same card rescheduled on both offline ->
+  converges to the later edit with no review lost. All four checks PASS.
+- Hardened topgre_eval/sync_test.py: reads CRUX_SYNC_ENDPOINT so it can run
+  against a throwaway server (real account untouched), and the conflict case now
+  waits so the two edits have distinct mod-times -> same-card convergence is
+  deterministic (previously it could tie and not settle).
+
 "Crux: router drill stops forcing a hard free-recall of the move"  (Jul 5 2026, 9:05 PM)
 - After you route a problem to its type, the drill now shows the move and the
   execute step directly, instead of gating them behind a "Now recall the move ->

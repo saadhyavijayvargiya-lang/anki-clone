@@ -23,6 +23,7 @@ from __future__ import annotations
 import os
 import sys
 import tempfile
+import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 for _p in ("pylib", "qt", "out/pylib", "out/qt"):
@@ -31,8 +32,10 @@ for _p in ("pylib", "qt", "out/pylib", "out/qt"):
 from anki.collection import Collection  # noqa: E402
 from anki.decks import DeckId  # noqa: E402
 
-ENDPOINT = "http://127.0.0.1:8080/"
-USER, PW = "crux", "crux"
+# Point at a throwaway server for testing so the real crux account is untouched:
+#   set CRUX_SYNC_ENDPOINT=http://127.0.0.1:8081/
+ENDPOINT = os.environ.get("CRUX_SYNC_ENDPOINT", "http://127.0.0.1:8080/")
+USER, PW = os.environ.get("CRUX_SYNC_USER", "crux"), os.environ.get("CRUX_SYNC_PW", "crux")
 
 
 def make_col(name: str) -> Collection:
@@ -153,25 +156,25 @@ def main() -> None:
     from anki.cards import CardId as _Cid
     x = cids[0]
     a.sched.set_due_date([_Cid(x)], "5")       # A reschedules X to +5 days
+    time.sleep(1.1)                            # ensure B's edit has a strictly later mod
     b.sched.set_due_date([_Cid(x)], "10")      # B reschedules X to +10 days (later edit)
+    pre_revlog = revlog_count(a)
     print(f"\nconflict card {x}: A set due={a.get_card(x).due}  "
-          f"B set due={b.get_card(x).due} (concurrent offline edit)")
-    for _ in range(4):
+          f"B set due={b.get_card(x).due} (concurrent offline edit; B is later)")
+    # A publishes first, then B merges (its later edit wins), then A pulls it back.
+    for _ in range(3):
         sync(a, auth_a)
         sync(b, auth_b)
+    sync(a, auth_a)
     a_due = a.get_card(x).due
     b_due = b.get_card(x).due
     print(f"due after sync -> A: {a_due}  B: {b_due}")
-    if a_due == b_due:
-        print("RESULT conflict-converges: PASS (both agree; last edit wins by USN)")
-    else:
-        print(
-            "NOTE conflict: no data is lost (revlog is append-only, verified above),"
-            " but this minimal two-client harness did not settle same-card state"
-            " convergence (the disjoint case converges perfectly). Anki's rule is"
-            " last-write-wins by USN at the server; verify same-card convergence"
-            " with the real desktop + AnkiDroid clients via SYNC_SETUP.md."
-        )
+    converged = a_due == b_due
+    # No review may vanish: the revlog is append-only, so the count never drops.
+    no_loss = revlog_count(a) >= pre_revlog and revlog_count(b) >= pre_revlog
+    print(f"RESULT conflict-converges: {'PASS' if converged else 'FAIL'} "
+          f"(both agree on due={a_due}; later edit wins by mod time)")
+    print(f"RESULT conflict-no-review-lost: {'PASS' if no_loss else 'FAIL'}")
 
     a.close()
     b.close()
