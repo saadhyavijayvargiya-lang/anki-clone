@@ -1,3 +1,10 @@
+<!-- Crux fork banner -->
+> **This repository is [Crux](./CRUX_README.md)** — an exam-readiness fork of Anki for the GRE Mathematics Subject Test (point-set topology). It adds a Rust triage/readiness engine, three honest scores, and a problem-to-type-to-method router drill, on desktop and Android.
+>
+> **Download the Android app** from the [`topgre-demo-v0.1` release](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/tag/topgre-demo-v0.1): [arm64 (phones)](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-arm64-v8a-debug.apk) · [x86_64 (emulator)](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-x86_64-debug.apk). For desktop, build from source (see [CRUX_README.md](./CRUX_README.md)).
+
+---
+
 # Anki
 
 [![Build Status](https://github.com/ankitects/anki/actions/workflows/ci.yml/badge.svg)](https://github.com/ankitects/anki/actions/workflows/ci.yml)

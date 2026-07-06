@@ -62,6 +62,18 @@ Optional demo data: with the app closed, `out\pyenv\Scripts\python topgre_eval\s
 The phone app is the AnkiDroid fork in `Anki-Android/`, built against a custom
 backend `.aar` from `Anki-Android-Backend/` that contains the readiness RPCs.
 
+**Download the prebuilt APK** (no build needed) from the
+[`topgre-demo-v0.1` release](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/tag/topgre-demo-v0.1):
+
+- Real phones (arm64): [AnkiDroid-full-arm64-v8a-debug.apk](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-arm64-v8a-debug.apk)
+- Emulator (x86_64): [AnkiDroid-full-x86_64-debug.apk](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-x86_64-debug.apk)
+
+Install with `adb install <apk>`, or copy the file to the device and open it
+(enable "install from unknown sources"). Crux features are in the DeckPicker
+overflow menu (TopGRE: Readiness / Cram).
+
+To build it yourself instead:
+
 ```
 cd Anki-Android-Backend    # build the shared Rust backend into an .aar
 cargo run -p build_rust    # needs JAVA_HOME, ANDROID_HOME, ANDROID_NDK_HOME, RELEASE=1
