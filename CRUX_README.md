@@ -35,6 +35,22 @@ BSD-3-Clause; those licenses are retained. Crux's additions are AGPL-3.0-or-late
 
 ## Build and run
 
+### Desktop (prebuilt wheels)
+
+Download from the [`topgre-demo-v0.1` release](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/tag/topgre-demo-v0.1)
+(Windows x64, needs Python 3.10+):
+[anki wheel](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/anki-26.5-cp310-abi3-win_amd64.whl)
+and [aqt wheel](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/aqt-26.5-py3-none-any.whl).
+Then install and run:
+
+```
+pip install anki-26.5-cp310-abi3-win_amd64.whl aqt-26.5-py3-none-any.whl
+anki
+```
+
+Crux features are under the **Tools** menu and on the home dashboard. Optional
+demo data (with the app closed): `python topgre_eval\seed_demo.py`.
+
 ### Desktop (from source)
 
 Prereqas: the Anki toolchain (Rust pinned by `rust-toolchain.toml`, Python, n2,

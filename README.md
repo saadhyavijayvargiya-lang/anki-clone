@@ -1,7 +1,9 @@
 <!-- Crux fork banner -->
 > **This repository is [Crux](./CRUX_README.md)** — an exam-readiness fork of Anki for the GRE Mathematics Subject Test (point-set topology). It adds a Rust triage/readiness engine, three honest scores, and a problem-to-type-to-method router drill, on desktop and Android.
 >
-> **Download the Android app** from the [`topgre-demo-v0.1` release](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/tag/topgre-demo-v0.1): [arm64 (phones)](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-arm64-v8a-debug.apk) · [x86_64 (emulator)](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-x86_64-debug.apk). For desktop, build from source (see [CRUX_README.md](./CRUX_README.md)).
+> **Downloads** (from the [`topgre-demo-v0.1` release](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/tag/topgre-demo-v0.1)):
+> - **Android:** [arm64 (phones)](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-arm64-v8a-debug.apk) · [x86_64 (emulator)](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/AnkiDroid-full-x86_64-debug.apk)
+> - **Desktop** (Windows x64, Python 3.10+): [anki](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/anki-26.5-cp310-abi3-win_amd64.whl) + [aqt](https://github.com/saadhyavijayvargiya-lang/anki-clone/releases/download/topgre-demo-v0.1/aqt-26.5-py3-none-any.whl) wheels — `pip install` both, then run `anki`. Or build from source (see [CRUX_README.md](./CRUX_README.md)).
 
 ---
 
